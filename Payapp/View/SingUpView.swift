@@ -14,6 +14,7 @@ struct SingUpView : View {
     var body : some View {
         NavigationStack{
             VStack(spacing: 30){
+                
                 TextField("メールアドレス", text: $newUser.Mailaddress)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
@@ -27,7 +28,7 @@ struct SingUpView : View {
                     NameSettingView(newUser: $newUser)
                 }
                 .colorMultiply(.black)
-                .padding()
+                .frame(width: 75 , height: 45)
                 .background(Color.yellow)
                 .cornerRadius(10)
             }

@@ -10,12 +10,21 @@ import SwiftUI
 
 
 struct GroupJoinView: View {
+    
+    @Binding var user : User
+    
     var body: some View {
         NavigationStack{
-            Form{
-                NavigationLink("グループに参加"){
-                    ContentView()
+            
+            VStack(spacing : 10){
+                
+                NavigationLink("参加"){
+                    ContentView(user: $user)
                 }
+                .foregroundColor(.black)
+                .frame(width: 300 , height: 60)
+                .background(Color.green)
+                .cornerRadius(15)
             }
         }
     }
@@ -23,6 +32,9 @@ struct GroupJoinView: View {
 
 struct GroupJoinView_Previews: PreviewProvider {
     static var previews: some View {
-        GroupJoinView() 
+        
+        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+        
+        GroupJoinView(user: $newUser)
     }
 }

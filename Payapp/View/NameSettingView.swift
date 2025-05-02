@@ -21,10 +21,10 @@ struct NameSettingView: View {
                     .textFieldStyle(.roundedBorder)
                 
                 NavigationLink("OK"){
-                    GroupselectView()
+                    GroupselectView(user: $newUser)
                 }
                 .foregroundColor(.black)
-                .padding()
+                .frame(width: 75 , height: 50)
                 .background(Color.yellow)
                 .cornerRadius(10)
             }

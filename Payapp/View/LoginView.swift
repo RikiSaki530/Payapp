@@ -15,10 +15,13 @@ struct LoginView: View {
     @State var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
     
     var body: some View {
+        
         NavigationStack{
-            VStack{
+        
+            VStack(spacing : 10){
+            
                 NavigationLink("ログイン"){
-                    GroupListView(existingUser: $ExistingUser)
+                    GroupListView(existingUser : $ExistingUser)
                 }
                 .colorMultiply(.black)
                 .padding()

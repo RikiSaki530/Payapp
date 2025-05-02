@@ -17,23 +17,22 @@ struct OpneUIView: View {
                 Text("会計app")
                     .font(.largeTitle)
                 
-                HStack(spacing : 40){
-                    NavigationLink("ログイン"){
-                        LoginView()
-                    }
-                    .colorMultiply(.black)
-                    .padding()
-                    .background(Color.yellow)
-                    .cornerRadius(10)
-                    
-                    NavigationLink("新規登録"){
-                        SingUpView()
-                    }
-                    .colorMultiply(.black)
-                    .padding()
-                    .background(Color.yellow)
-                    .cornerRadius(10)
+                NavigationLink("ログイン"){
+                    LoginView()
                 }
+                    .colorMultiply(.black)
+                    .frame(width: 300 , height: 60)
+                    .background(Color.yellow)
+                    .cornerRadius(10)
+                
+                NavigationLink("新規登録"){
+                    SingUpView()
+                }
+                    .colorMultiply(.black)
+                    .frame(width: 300 , height: 60)
+                    .background(Color.yellow)
+                    .cornerRadius(10)
+                
             }
         }
     }

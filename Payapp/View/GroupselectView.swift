@@ -10,31 +10,37 @@
 import SwiftUI
 
 struct GroupselectView: View {
+    
+    @Binding var user : User
+    
     var body: some View {
         
         NavigationStack{
             
-            HStack{
+            VStack{
+                
                 Spacer()
+                    .frame(height : 40)
+                
                 NavigationLink("グループを作成"){
-                    GroupCreationView()
+                    GroupCreationView(user: $user)
                 }
                     .colorMultiply(.black)
-                    .padding()
+                    .frame(width: 300 , height: 60)
                     .background(Color.yellow)
                     .cornerRadius(10)
                 
                 Spacer()
+                    .frame(height : 40)
                 
                 NavigationLink("グループに参加"){
-                    GroupJoinView()
+                    GroupJoinView(user : $user)
                 }
                 .colorMultiply(.black)
-                .padding()
-                .background(Color.yellow)
+                .frame(width: 300 , height: 60)
+                .background(Color.mint)
                 .cornerRadius(10)
                 
-                Spacer()
             }
         }
     }
@@ -42,6 +48,8 @@ struct GroupselectView: View {
 
 struct GroupselectView_Previews: PreviewProvider {
     static var previews: some View {
-        GroupselectView()
+        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+        
+        GroupselectView(user: $newUser)
     }
 }

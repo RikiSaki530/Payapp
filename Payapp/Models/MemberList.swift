@@ -15,11 +15,7 @@ class MemberList : ObservableObject{
     
     init() {
         // 全員が同じ PayList を参照
-        self.members = [
-            ClubMember(name: "riki", grade: "1", schoolnumber: "245722K"),
-            ClubMember(name: "kio", grade: "2", schoolnumber: "222"),
-            ClubMember(name: "yu", grade: "3", schoolnumber: "333")
-        ]
+        self.members = []
     }
     
     //

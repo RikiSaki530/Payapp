@@ -11,6 +11,8 @@ import FirebaseAuth
 
 struct ContentView: View {
     
+    @Binding var user :User
+    
     @StateObject var Memberdata = MemberList() // ClubMembersデータ
     @StateObject var listData = PayList() // PayListデータ
     
@@ -55,7 +57,7 @@ struct ContentView: View {
                 }
                 
                 NavigationLink("設定"){
-                    SettingView()
+                    SettingView( user : $user)
                 }
                 Section("管理用"){
                     NavigationLink("admin"){
@@ -80,6 +82,10 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        
+        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+
+        
+        ContentView(user: $newUser)
     }
 }
