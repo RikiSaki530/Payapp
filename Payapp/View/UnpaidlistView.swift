@@ -11,8 +11,10 @@ import SwiftUI
 struct UnpaidlistView: View {
     
     @Binding var item: String  // 対象の支払い項目名（例：「4月会費」）
+    @Binding var user : User
+    @Binding var group : GroupData
+    
     @EnvironmentObject var data: MemberList
-    var isAdmin: Bool
     @State private var selectValues: [UUID: Int] = [:]
     @State private var unpaidMember: [ClubMember] = []
     
@@ -27,15 +29,15 @@ struct UnpaidlistView: View {
                     if let payItem = member.paymentStatus.first(where: { $0.name == item }) {
                         Picker("", selection: Binding(
                             get: {
-                                selectValues[member.id] ?? symbolToTag(payItem.paystatce)
+                                selectValues[member.id] ?? symbolToTag(payItem.paystatus)
                             },
                             set: { newValue in
-                                if isAdmin {
+                                if !(user.admin[group.groupCode] ?? false) {
                                     selectValues[member.id] = newValue
                                     
                                     if let index = data.members.firstIndex(where: { $0.id == member.id }),
                                        let payIndex = data.members[index].paymentStatus.firstIndex(where: { $0.name == item }) {
-                                        data.members[index].paymentStatus[payIndex].paystatce = tagToSymbol(newValue)
+                                        data.members[index].paymentStatus[payIndex].paystatus = tagToSymbol(newValue)
                                     }
                                 }
                             }
@@ -46,7 +48,7 @@ struct UnpaidlistView: View {
                         }
                         .pickerStyle(MenuPickerStyle())
                         .frame(width: 150)
-                        .disabled(!isAdmin)
+                        .disabled(!(user.admin[group.groupCode] ?? false) )
                     }
                 }
             }
@@ -77,11 +79,11 @@ struct UnpaidlistView: View {
     // 未払いメンバーリスト作成
     func unpaidMemberList() {
         unpaidMember = data.members.filter { member in
-            member.paymentStatus.contains(where: { $0.name == item && $0.paystatce == "❌" })
+            member.paymentStatus.contains(where: { $0.name == item && $0.paystatus == "❌" })
         }
         for member in unpaidMember {
             if let payItem = member.paymentStatus.first(where: { $0.name == item }) {
-                selectValues[member.id] = symbolToTag(payItem.paystatce)
+                selectValues[member.id] = symbolToTag(payItem.paystatus)
             }
         }
     }

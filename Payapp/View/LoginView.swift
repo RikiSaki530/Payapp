@@ -12,14 +12,22 @@ import FirebaseAuth
 
 struct LoginView: View {
     
-    @State var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+    @State var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: [:],  groupList : [], UserID: 0)
     
     var body: some View {
         
         NavigationStack{
         
-            VStack(spacing : 10){
-            
+            VStack(spacing : 30){
+                
+                TextField("メールアドレス" , text: $ExistingUser.Mailaddress)
+                    .frame(width: 300)
+                    .textFieldStyle(.roundedBorder)
+                
+                TextField("パスワード" , text: $ExistingUser.Password)
+                    .frame(width: 300)
+                    .textFieldStyle(.roundedBorder)
+                
                 NavigationLink("ログイン"){
                     GroupListView(existingUser : $ExistingUser)
                 }

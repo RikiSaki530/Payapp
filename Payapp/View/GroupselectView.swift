@@ -48,7 +48,7 @@ struct GroupselectView: View {
 
 struct GroupselectView_Previews: PreviewProvider {
     static var previews: some View {
-        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: [:], groupList : [], UserID: 0)
         
         GroupselectView(user: $newUser)
     }

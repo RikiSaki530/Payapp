@@ -15,28 +15,39 @@ struct GroupListView: View {
         
         NavigationStack{
             
-            VStack(spacing: 30){
+            VStack(spacing: 20){
                 
                 Spacer()
                     .frame(height : 25) // ← 幅を指定
                 
-                
-                NavigationLink(destination: GroupCreationView(user: $existingUser)) {
-                    Text("グループを作成")
+                NavigationLink("グループを作成") {
+                    GroupCreationView(user: $existingUser)
+                }
                         .foregroundColor(.black)
                         .frame(width: 300 , height: 60)
                         .background(Color.green)
                         .cornerRadius(15)
-                }
                 
-                NavigationLink(destination: ContentView(user: $existingUser)) {
-                    Text("グループ")
-                        .foregroundColor(.black) // ← テキストの色も明示
-                        .frame(width: 300 , height: 60)
-                        .background(Color.yellow)
-                        .cornerRadius(15)
+                NavigationLink("グループに参加"){
+                    GroupJoinView(user: $existingUser)
                 }
+                    .foregroundColor(.black) // ← テキストの色も明示
+                    .frame(width: 300 , height: 60)
+                    .background(Color.mint)
+                    .cornerRadius(15)
                 
+                
+                ForEach($existingUser.groupList){$group in
+                    NavigationLink{
+                        ContentView(user: $existingUser , group: $group)
+                    }label: {
+                        Text(group.groupName)
+                    }
+                            .foregroundColor(.black) // ← テキストの色も明示
+                            .frame(width: 300 , height: 60)
+                            .background(Color.mint)
+                            .cornerRadius(15)
+                }
                 
                 
                 Spacer()
@@ -51,7 +62,7 @@ struct GroupListView: View {
 struct GroupListView_Previews: PreviewProvider {
     static var previews: some View {
         
-        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: false, leader: false, groupList : [], UserID: 0)
+        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: [:], groupList : [], UserID: 0)
         
         GroupListView(existingUser: $newUser)
     }

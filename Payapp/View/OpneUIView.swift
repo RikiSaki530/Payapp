@@ -17,16 +17,16 @@ struct OpneUIView: View {
                 Text("会計app")
                     .font(.largeTitle)
                 
-                NavigationLink("ログイン"){
-                    LoginView()
+                NavigationLink("新規登録"){
+                    SingUpView()
                 }
                     .colorMultiply(.black)
                     .frame(width: 300 , height: 60)
                     .background(Color.yellow)
                     .cornerRadius(10)
                 
-                NavigationLink("新規登録"){
-                    SingUpView()
+                NavigationLink("ログイン"){
+                    LoginView()
                 }
                     .colorMultiply(.black)
                     .frame(width: 300 , height: 60)

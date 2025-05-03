@@ -15,10 +15,18 @@ struct User : Identifiable{
     var name : String
     var Mailaddress : String
     var Password : String
-    var admin : Bool //管理者権限を与える
-    var leader : Bool  //グループに入っている人の権限をいじれる
+    var admin : [String : Bool] //管理者権限を与える
     var groupList : [ GroupData ] = []
     var UserID : Int
     
     var id = UUID()
+    
+    init(name: String, Mailaddress: String, Password: String, admin: [String : Bool], groupList: [GroupData], UserID: Int) {
+        self.name = name
+        self.Mailaddress = Mailaddress
+        self.Password = Password
+        self.admin = admin
+        self.groupList = groupList
+        self.UserID = UserID
+    }
 }

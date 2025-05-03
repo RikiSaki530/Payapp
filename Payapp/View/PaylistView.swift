@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct PaylistView: View {
-    @ObservedObject var member: ClubMember
-    var isAdmin: Bool
+    
+    @Binding var user : User
+    @Binding var group : GroupData
+    
+    @State var member: ClubMember
     @State private var selectValues: [UUID: Int] = [:]
 
     var body: some View {
@@ -21,13 +24,13 @@ struct PaylistView: View {
                     
                     Picker("", selection: Binding(
                         get: {
-                            selectValues[item.id] ?? symbolToTag(item.paystatce)
+                            selectValues[item.id] ?? symbolToTag(item.paystatus)
                         },
                         set: { newValue in
-                            if isAdmin {
+                            if !(user.admin[group.groupCode] ?? false) {
                                 selectValues[item.id] = newValue
                                 if let index = member.paymentStatus.firstIndex(where: { $0.id == item.id }) {
-                                    member.paymentStatus[index].paystatce = tagToSymbol(newValue)
+                                    member.paymentStatus[index].paystatus = tagToSymbol(newValue)
                                 }
                             }
                         }
@@ -38,13 +41,13 @@ struct PaylistView: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     .frame(width: 150)
-                    .disabled(!isAdmin)
+                    .disabled(!(user.admin[group.groupCode] ?? false))
                 }
             }
         }
         .onAppear {
             for item in member.paymentStatus {
-                selectValues[item.id] = symbolToTag(item.paystatce)
+                selectValues[item.id] = symbolToTag(item.paystatus)
             }
         }
     }
@@ -70,6 +73,7 @@ struct PaylistView: View {
 
     
 
+/**
 struct PaylistView_Previews : PreviewProvider{
     static var previews: some View {
         let  previewMember = ClubMember(
@@ -77,9 +81,9 @@ struct PaylistView_Previews : PreviewProvider{
             grade: "8",
             schoolnumber: "888",
             paymentStatus: [
-                PayItem(name: "4月部費", price: 1000, paystatce: "⭕️"),
-                PayItem(name: "5月部費", price: 1000, paystatce: "❌"),
-                PayItem(name: "6月部費", price: 1000, paystatce: "⭕️")
+                PayItem(name: "4月部費", price: 1000, paystatus: "⭕️"),
+                PayItem(name: "5月部費", price: 1000, paystatus: "❌"),
+                PayItem(name: "6月部費", price: 1000, paystatus: "⭕️")
             ]
         )
         
@@ -92,3 +96,4 @@ struct PaylistView_Previews : PreviewProvider{
         }
     }
 }
+*/

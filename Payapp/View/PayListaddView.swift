@@ -10,7 +10,7 @@ import SwiftUI
 struct PayListaddView: View {
     
     //新規作成用
-    @State var newpayitem = PayItem(name: "", price: nil, paystatce: "➖")
+    @State var newpayitem = PayItem(name: "", price: nil, paystatus: "➖")
     //PayList
     @EnvironmentObject var paylist : PayList
     @EnvironmentObject var Memberdata :  MemberList
@@ -33,10 +33,12 @@ struct PayListaddView: View {
         .toolbar{
             ToolbarItem{
                 Button("完了"){
-                    
-                    paylist.paylistitem.append(newpayitem)
-                    Memberdata.addPaymentitem(PaymentItem: newpayitem)
-                    dismiss()
+                    if !newpayitem.name.isEmpty &&
+                        !paylist.paylistitem.contains(where: { $0.name == newpayitem.name }) {
+                        paylist.paylistitem.append(newpayitem)
+                        Memberdata.addPaymentitem(PaymentItem: newpayitem)
+                        dismiss()
+                    }
                 }
             }
         }

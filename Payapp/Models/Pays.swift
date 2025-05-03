@@ -7,9 +7,15 @@
 
 import SwiftUI
 
-struct PayItem: Identifiable {
+struct PayItem: Identifiable{
     var id = UUID()
     var name: String      // 例:「4月会費」
     var price: Int?        // 例: 1000円
-    var paystatce: String  //支払い項目
+    var paystatus: String  //支払い項目
+    
+    init(name:String , price : Int? , paystatus :String){
+        self.name = name
+        self.price = price
+        self.paystatus = paystatus
+    }
 }

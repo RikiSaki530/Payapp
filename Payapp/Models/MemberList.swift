@@ -2,6 +2,9 @@
 //  MemberList.swift
 //  Payapp
 //
+//  MemberList.swift
+//  Payapp
+//
 //  Created by 崎原利生 on 2025/04/27.
 //
 
@@ -20,7 +23,7 @@ class MemberList : ObservableObject{
     
     //
     func addPaymentitem(PaymentItem : PayItem) {
-        let unpaidItem = PayItem(name: PaymentItem.name, price: PaymentItem.price, paystatce: "❌")
+        let unpaidItem = PayItem(name: PaymentItem.name, price: PaymentItem.price, paystatus: "❌")
             for member in members {
                 member.paymentStatus.append(unpaidItem)
             }

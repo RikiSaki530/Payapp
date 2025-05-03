@@ -9,6 +9,9 @@ import SwiftUI
 
 struct MastPayView: View{
     
+    @Binding var user : User
+    @Binding var group : GroupData
+    
     //paylist
     @EnvironmentObject var paylist : PayList
     @EnvironmentObject var Memberdata : MemberList
@@ -29,31 +32,42 @@ struct MastPayView: View{
                         }
                     }
                 }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        let deletedItem = paylist.paylistitem[index]
-                        Memberdata.removeallPaymentitem(rmpayitem: deletedItem.name)
-                    }
-                    
-                    paylist.paylistitem.remove(atOffsets: indexSet)
-                }
+                .onDelete(perform: (user.admin[group.groupCode] ?? false) ? deleteItems : nil)
             }
         }
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        for index in offsets {
+            let deletedItem = paylist.paylistitem[index]
+            Memberdata.removeallPaymentitem(rmpayitem: deletedItem.name)
+        }
+        paylist.paylistitem.remove(atOffsets: offsets)
     }
 }
 
 
+/**
 struct ContentSecondView_Previews: PreviewProvider {
     static var previews: some View {
         // ⭐️ ダミーデータの作成
         let previewPaylist = PayList()
+        
+        @State var user1 = User(name: "", Mailaddress: "", Password: "", admin: true, groupList: [] , UserID: 0)
+        
+        @State var user2 = User(name: "", Mailaddress: "", Password: "", admin: false, groupList: [] , UserID: 0)
+        
         previewPaylist.paylistitem = [
-            PayItem(name: "4月会費", price: 1000, paystatce: "❌"),
-            PayItem(name: "5月会費", price: 1200, paystatce: "⭕️"),
-            PayItem(name: "イベント費", price: 500, paystatce: "➖")
+            PayItem(name: "4月会費", price: 1000, paystatus: "❌"),
+            PayItem(name: "5月会費", price: 1200, paystatus: "⭕️"),
+            PayItem(name: "イベント費", price: 500, paystatus: "➖")
         ]
-
-        return MastPayView()
-            .environmentObject(previewPaylist)
-    }
+        
+        return
+            MastPayView(user:$user2)
+                .environmentObject(previewPaylist)
+                .environmentObject(MemberList())
+        
+        }
 }
+*/

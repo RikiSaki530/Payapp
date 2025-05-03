@@ -9,6 +9,9 @@ import SwiftUI
 
 struct UnpaidView: View {
     
+    @Binding var user : User
+    @Binding var group : GroupData
+    
     @EnvironmentObject var data: MemberList
     @EnvironmentObject var listData: PayList
     @State var unpaidlist: [String] = []
@@ -21,7 +24,7 @@ struct UnpaidView: View {
                 ForEach($unpaidlist, id: \.self) { $item in
                     Section(item) {
                         // unpaidMemberを使って未払いのメンバーを表示
-                        UnpaidlistView(item: $item, isAdmin: true)
+                        UnpaidlistView(item: $item, user :$user , group: $group)
                     }
                 }
             }
@@ -37,7 +40,7 @@ struct UnpaidView: View {
 
         for item in listData.paylistitem {
             for member in data.members {
-                if let status = member.paymentStatus.first(where: { $0.name == item.name })?.paystatce,
+                if let status = member.paymentStatus.first(where: { $0.name == item.name })?.paystatus,
                    status == "❌" {
                     unpaidlist.append(item.name)
                     break

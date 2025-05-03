@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct IndividualView : View{
+    
     @Binding var individual : ClubMember
+    
+    @Binding var user : User
+    @Binding var group : GroupData
     
     var body: some View{
         VStack{
@@ -20,14 +24,7 @@ struct IndividualView : View{
             Text("学籍番号 : "+(individual.schoolnumber))
                 .font(.title)
             
-            PaylistView(member : individual, isAdmin: true )
+            PaylistView(user: $user, group: $group, member: individual)
         }
-    }
-}
-
-struct IndividualView_PreViews : PreviewProvider{
-    static var previews: some View {
-        let previewMember = ClubMember(name: "toshi", grade: "8", schoolnumber: "888")
-        IndividualView(individual: .constant(previewMember))
     }
 }

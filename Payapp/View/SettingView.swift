@@ -13,23 +13,22 @@ struct SettingView: View {
     var body: some View {
         
         NavigationStack{
-            
-            NavigationLink("アカウント削除"){
-                DeleteAccountView()
+            List{
+                NavigationLink("アカウント削除"){
+                    DeleteAccountView()
+                }
+                
+                NavigationLink("グループリストに戻る"){
+                    GroupListView(existingUser : $user)
+                }
             }
-            .colorMultiply(.black)
-            .padding()
-            .background(Color.yellow)
-            .cornerRadius(10)
-            
-            
-            NavigationLink("グループリストに戻る"){
-                GroupListView(existingUser : $user)
-            }
-            .colorMultiply(.black)
-            .padding()
-            .background(Color.yellow)
-            .cornerRadius(10)
         }
+    }
+}
+
+struct SettingView_PreView : PreviewProvider{
+    static var previews: some View{
+        @State var user = User(name : "" ,Mailaddress: "", Password: "", admin: [:], groupList : [], UserID: 0)
+        SettingView(user: $user)
     }
 }

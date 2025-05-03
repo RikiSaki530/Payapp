@@ -40,10 +40,10 @@ struct MemberAddView : View{
         .toolbar{
             ToolbarItem{
                 Button("完了"){
-                    if !Memberdata.members.contains(where: { $0.name == newMember.name }) {
+                    if !newMember.name.isEmpty && !Memberdata.members.contains(where: { $0.name == newMember.name }) {
                         Memberdata.members.append(newMember)
+                        dismiss()
                     }
-                    dismiss()
                 }
             }
         }
@@ -51,6 +51,7 @@ struct MemberAddView : View{
     }
 }
     
+
 struct MemberAddView_Previews : PreviewProvider{
     static var previews: some View {
         

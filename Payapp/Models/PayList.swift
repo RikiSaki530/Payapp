@@ -8,7 +8,7 @@
 import SwiftUI
 
 //リスト作成
-class PayList : ObservableObject {
+class PayList : ObservableObject{
     
     //Payの要素をlistで管理
     @Published var paylistitem :[PayItem] = []
