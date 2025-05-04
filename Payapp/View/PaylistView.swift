@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct PaylistView: View {
     
@@ -27,7 +28,7 @@ struct PaylistView: View {
                             selectValues[item.id] ?? symbolToTag(item.paystatus)
                         },
                         set: { newValue in
-                            if !(user.admin[group.groupCode] ?? false) {
+                            if user.admin[group.groupCode] == true {
                                 selectValues[item.id] = newValue
                                 if let index = member.paymentStatus.firstIndex(where: { $0.id == item.id }) {
                                     member.paymentStatus[index].paystatus = tagToSymbol(newValue)
@@ -69,31 +70,21 @@ struct PaylistView: View {
         default: return "❌"
         }
     }
+    
+    func checkGroupExistence() {
+        let db = Firestore.firestore()
+        
+        db.collection("Group").document(group.groupCode).getDocument { document, error in
+            if let error = error {
+                print("エラーが発生しました: \(error.localizedDescription)")
+                return
+            }
+            group.groupFireChange() // 変更処理を呼び出す
+            
+        }
+    }
 }
 
     
 
-/**
-struct PaylistView_Previews : PreviewProvider{
-    static var previews: some View {
-        let  previewMember = ClubMember(
-            name: "toshi",
-            grade: "8",
-            schoolnumber: "888",
-            paymentStatus: [
-                PayItem(name: "4月部費", price: 1000, paystatus: "⭕️"),
-                PayItem(name: "5月部費", price: 1000, paystatus: "❌"),
-                PayItem(name: "6月部費", price: 1000, paystatus: "⭕️")
-            ]
-        )
-        
-        VStack {
-            Text("管理者プレビュー")
-            PaylistView(member: previewMember, isAdmin: true)
-            
-            Text("一般ユーザープレビュー")
-            PaylistView(member: previewMember, isAdmin: false)
-        }
-    }
-}
-*/
+

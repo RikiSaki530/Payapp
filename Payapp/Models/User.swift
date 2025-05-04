@@ -9,6 +9,8 @@
 //これでログインできるようにする
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct User : Identifiable{
 
@@ -28,5 +30,66 @@ struct User : Identifiable{
         self.admin = admin
         self.groupList = groupList
         self.UserID = UserID
+    }
+
+    
+    //作成
+    func userfireadd() {
+        let db = Firestore.firestore()
+        
+        let userData: [String: Any] = [
+            "name": self.name,
+            "Mailaddress": self.Mailaddress,
+            "Password": self.Password,
+            "admin": self.admin,
+            "UserID": self.UserID,
+            "groupList": self.groupList.map { $0.toDict() }
+        ]
+        
+        db.collection("User").document(String(self.UserID)).setData(userData) { error in
+            if let error = error {
+                print("データ追加失敗: \(error)")
+            } else {
+                print("データ追加に成功しました。")
+            }
+        }
+    }
+    
+    //変更
+    func userfirechange() {
+        
+        let db = Firestore.firestore()
+        let changeRef = db.collection("User").document(String(self.UserID))
+        
+        let userData: [String: Any] = [
+                "name": self.name,
+                "Mailaddress": self.Mailaddress,
+                "Password": self.Password,
+                "admin": self.admin,
+                "UserID": self.UserID,
+                "groupList": self.groupList.map { $0.toDict() }
+            ]
+            
+        changeRef.updateData(userData) { error in
+            if let error = error {
+                print("データ更新失敗: \(error)")
+            } else {
+                print("データ更新に成功しました。")
+            }
+        }
+    }
+    
+
+    
+}
+
+extension GroupData {
+    func toDict() -> [String: Any] {
+        return [
+            "groupName": groupName,
+            "groupCode": groupCode,
+            "Leader": Leader,
+            "MemberList": MemberList
+        ]
     }
 }

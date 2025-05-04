@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct PayListaddView: View {
     
+    @Binding var group : GroupData
     //新規作成用
     @State var newpayitem = PayItem(name: "", price: nil, paystatus: "➖")
     //PayList
@@ -19,7 +21,7 @@ struct PayListaddView: View {
     
     
     var body: some View {
-        VStack(alignment :  .leading){
+        VStack(){
             Form{
                 Section("支払い名義"){
                     TextField("Name" , text: $newpayitem.name)
@@ -43,13 +45,24 @@ struct PayListaddView: View {
             }
         }
     }
-}
-
-
-struct PaidList_Previews: PreviewProvider {
-    static var previews: some View {
-        PayListaddView()
-            .environmentObject(PayList())
-            .environmentObject(MemberList())
+    
+    
+    func checkGroupExistence() {
+        
+        let db = Firestore.firestore()
+        
+        db.collection("Group").document(group.groupCode).getDocument { document, error in
+            if let error = error {
+                print("エラーが発生しました: \(error.localizedDescription)")
+                return
+            }
+            
+            group.groupFireChange() // 変更処理を呼び出す
+            
+        }
     }
+    
 }
+
+
+

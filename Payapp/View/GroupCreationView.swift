@@ -8,11 +8,17 @@
 //グループを作る画面
 
 import SwiftUI
+import FirebaseFirestore
 
 struct GroupCreationView: View {
     
     @Binding var user : User
-    @State var group = GroupData(groupName: "", groupCode: "", Leader: [:], MemberList: [:])
+    @State var group = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
+    @State private var shouldNavigate = false
+    
+    @StateObject var Memberdata = MemberList() // ClubMembersデータ
+    @StateObject var listData = PayList() // PayListデータ
+
     
     var body: some View {
      
@@ -23,30 +29,47 @@ struct GroupCreationView: View {
                 TextField("グループ名" , text: $group.groupName)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
-
+                    .autocapitalization(.none)
                 
-                NavigationLink("グループを作成"){
-                    ContentView(user:$user , group:$group)
+                Button("グループを作成") {
+                    if !group.groupName.isEmpty{
+                        CanMakeGroup()
+                        shouldNavigate = true  // ← これで遷移が発動する
+                    }
                 }
-                .foregroundColor(.black)
-                .frame(width: 300 , height: 60)
-                .background(Color.mint)
-                .cornerRadius(15)
+                .colorMultiply(.black)
+                .frame(width: 300 , height: 50)
+                .background(Color.yellow)
+                .cornerRadius(10)
+                
             }
+                .navigationDestination(isPresented: $shouldNavigate) {
+                    ContentView(user: $user, group: $group)
+                        .environmentObject(Memberdata)
+                        .environmentObject(listData)
+                }
             
         }
     }
     
+    
     func CanMakeGroup(){
         
+        //グループのIDを設定
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document()
+        group.groupCode = docRef.documentID
+
         //グループリーダー規定
         group.Leader[user.name] = user.UserID
-        group.MemberList[user.name] = user.UserID
+        group.AccountMemberList[user.name] = user.UserID
         //groupListに追加
         user.groupList.append(group)
         //adminは無条件にtrue
         user.admin[group.groupCode] = true
         
+        group.groupFireAdd()
+        user.userfirechange()
     }
 }
 

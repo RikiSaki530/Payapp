@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct MemberAddView : View{
+    
+    @Binding var group : GroupData
     
     @EnvironmentObject var Memberdata :  MemberList
     @EnvironmentObject var listData : PayList
@@ -49,19 +52,20 @@ struct MemberAddView : View{
         }
         
     }
+    
+    func checkGroupExistence() {
+        let db = Firestore.firestore()
+        
+        db.collection("Group").document(group.groupCode).getDocument { document, error in
+            if let error = error {
+                print("エラーが発生しました: \(error.localizedDescription)")
+                return
+            }
+            group.groupFireChange() // 変更処理を呼び出す
+            
+        }
+    }
+    
 }
     
 
-struct MemberAddView_Previews : PreviewProvider{
-    static var previews: some View {
-        
-        let dummyMemberData = MemberList()
-        let dummyListData = PayList()
-        
-        NavigationStack(){
-            MemberAddView()
-                .environmentObject(dummyMemberData)
-                .environmentObject(dummyListData)
-        }
-    }
-}

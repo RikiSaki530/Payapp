@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 
 struct UnpaidlistView: View {
@@ -32,7 +33,7 @@ struct UnpaidlistView: View {
                                 selectValues[member.id] ?? symbolToTag(payItem.paystatus)
                             },
                             set: { newValue in
-                                if !(user.admin[group.groupCode] ?? false) {
+                                if user.admin[group.groupCode] == true {
                                     selectValues[member.id] = newValue
                                     
                                     if let index = data.members.firstIndex(where: { $0.id == member.id }),
@@ -73,6 +74,19 @@ struct UnpaidlistView: View {
         case 2: return "❌"
         case 3: return "➖"
         default: return "❌"
+        }
+    }
+    
+    func checkGroupExistence() {
+        let db = Firestore.firestore()
+        
+        db.collection("Group").document(group.groupCode).getDocument { document, error in
+            if let error = error {
+                print("エラーが発生しました: \(error.localizedDescription)")
+                return
+            }
+            group.groupFireChange() // 変更処理を呼び出す
+            
         }
     }
     

@@ -37,4 +37,7 @@ class MemberList : ObservableObject{
         }
     }
     
+    func decodeMemberlist(memberlist : [ClubMember]){
+        self.members = memberlist
+    }
 }

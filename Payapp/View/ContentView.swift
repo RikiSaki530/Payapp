@@ -14,12 +14,14 @@ struct ContentView: View {
     @Binding var user :User
     @Binding var group : GroupData
     
-    @StateObject var Memberdata = MemberList() // ClubMembersデータ
-    @StateObject var listData = PayList() // PayListデータ
+    @EnvironmentObject var listData : PayList
+    @EnvironmentObject var Memberdata : MemberList
     
     var body: some View {
+        
         NavigationStack {
-            Text("団体名")
+            
+            Text(group.groupName)
                 .font(.largeTitle)
             
             List {
@@ -45,14 +47,15 @@ struct ContentView: View {
                 }
                 
                 Section("追加"){
+                    
                     NavigationLink("メンバー追加"){
-                        MemberAddView()
+                        MemberAddView(group : $group)
                             .environmentObject(Memberdata)
                             .environmentObject(listData)
                     }
                     
                     NavigationLink("支払い項目追加"){
-                        PayListaddView()
+                        PayListaddView(group : $group)
                             .environmentObject(listData)
                             .environmentObject(Memberdata)
                     }
@@ -63,19 +66,19 @@ struct ContentView: View {
                     SettingView(user : $user)
                 }
                 
-                if (user.admin[group.groupCode] ?? false) == true{
-                    Section("管理用"){
-                        NavigationLink("admin"){
+                if user.admin[group.groupCode] == true {
+                    Section("管理用") {
+                        NavigationLink("admin") {
                             AddminView(user: $user, group: $group)
                         }
                     }
-                    
                 }
+
             }
         }
         .toolbar{
             ToolbarItem{
-                ShareLink(item: "このグループに参加してね！コード: \($group.groupCode)" ){
+                ShareLink(item: "このグループに参加してね！コード: \(group.groupCode)" ){
                     HStack {
                         Image(systemName: "square.and.arrow.up")
                         
@@ -84,24 +87,54 @@ struct ContentView: View {
                 }
             }
         }
-    }
-}
-
-/**
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
         
-        @State var newUser1 = User(name : "" ,Mailaddress: "", Password: "", admin: false,  groupList : [], UserID: 0)
-        
-        @State var newUser2 = User(name : "" ,Mailaddress: "", Password: "", admin: true,  groupList : [], UserID: 0)
-        
-        @State var newgroup = GroupData(groupName: "", groupCode: "", Leader: "", MemberList: [])
-        
-        
-        VStack{
-            ContentView(user: $newUser1 , group: $newgroup)
-            ContentView(user:$newUser2 , group: $newgroup)
+        .onAppear{
+            Memberdata.decodeMemberlist(memberlist: group.MemberList)
+            listData.decodepaylist(paylist: group.PayList)
         }
     }
+    
+    
+    func checkUserExistence() {
+        let db = Firestore.firestore()
+        
+        // Firestoreからuserの存在を確認
+        db.collection("User").document(String(user.UserID)).getDocument { document, error in
+            if let error = error {
+                print("エラーが発生しました: \(error.localizedDescription)")
+                return
+            }
+            
+            if let document = document, document.exists {
+                // 存在する場合は変更
+                print("ユーザーが存在します。データを変更します。")
+                user.userfirechange() // 変更処理を呼び出す
+            } else {
+                // 存在しない場合は追加
+                print("ユーザーが存在しません。新しいユーザーを追加します。")
+                user.userfireadd() // 追加処理を呼び出す
+            }
+        }
+        
+        
+        
+        
+        func checkGroupExistence() {
+            let db = Firestore.firestore()
+            
+            db.collection("Group").document(group.groupCode).getDocument { document, error in
+                if let error = error {
+                    print("エラーが発生しました: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let document = document, document.exists {
+                    // 存在する場合は変更
+                    print("グループが存在します。データを変更します。")
+                    group.groupFireChange() // 変更処理を呼び出す
+                }
+            }
+        }
+    }
+    
 }
-*/

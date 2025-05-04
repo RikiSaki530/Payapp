@@ -12,5 +12,9 @@ class PayList : ObservableObject{
     
     //Payの要素をlistで管理
     @Published var paylistitem :[PayItem] = []
+    
+    func decodepaylist(paylist : [PayItem]){
+        self.paylistitem = paylist
+    }
 
 }

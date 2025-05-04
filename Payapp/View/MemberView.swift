@@ -34,7 +34,7 @@ struct MemberView: View {
         .toolbar {
             ToolbarItem {
                 NavigationLink("追加") {
-                    MemberAddView()
+                    MemberAddView(group: $group)
                         .environmentObject(data) // MemberListデータを渡す
                         .environmentObject(listData) // PayListデータを渡す
                 }
