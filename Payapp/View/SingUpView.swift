@@ -10,7 +10,7 @@ import FirebaseAuth
 
 struct SingUpView: View {
     
-    @State var newUser = User(name: "", Mailaddress: "", Password: "", admin: [:], groupList: [], UserID: 0)
+    @State var newUser = User(name: "", Mailaddress: "", Password: "", admin: [:], groupList: [], UserID: "")
     @State private var isRegistered = false
     @State private var errorMessage = ""
     
@@ -72,13 +72,19 @@ struct SingUpView: View {
                 return
             }
             
+            guard let authUser = authResult?.user else {
+                print("Firebaseユーザー情報が取得できませんでした。")
+                completion(nil)
+                return
+            }
+            
             let newUser = User(
                 name: name,
                 Mailaddress: email,
                 Password: password,
                 admin: [:],
                 groupList: [],
-                UserID: Int.random(in: 100000...999999)
+                UserID: authUser.uid
             )
             
             // ユーザーを Firestore に追加後に次の処理を行う

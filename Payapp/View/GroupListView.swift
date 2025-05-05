@@ -83,8 +83,8 @@ struct GroupListView: View {
                 self.group = GroupData(
                     groupName: data?["groupName"] as? String ?? "",
                     groupCode: data?["groupCode"] as? String ?? "",
-                    Leader: data?["Leader"] as? [String: Int] ?? [:],
-                    AccountMemberList: data?["AccountMemberList"] as? [String:Int] ?? [:],
+                    Leader: data?["Leader"] as? [String: String] ?? [:],
+                    AccountMemberList: data?["AccountMemberList"] as? [String:String] ?? [:],
                     MemberList: data?["MemberList"] as? [ClubMember] ?? [],
                     PayList : data?["PayList"] as? [PayItem] ?? []
                 )
@@ -106,17 +106,5 @@ struct GroupListView: View {
                 print("指定したグループは存在しません")
             }
         }
-    }
-}
-
-
-
-
-struct GroupListView_Previews: PreviewProvider {
-    static var previews: some View {
-        
-        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: [:], groupList : [], UserID: 0)
-        
-        GroupListView(existingUser: $newUser)
     }
 }

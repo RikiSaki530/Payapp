@@ -61,11 +61,10 @@ struct MemberAddView : View{
                 print("エラーが発生しました: \(error.localizedDescription)")
                 return
             }
-            group.groupFireChange() // 変更処理を呼び出す
+        group.groupFireChange() // 変更処理を呼び出す
             
         }
     }
-    
+        
 }
-    
-
+        

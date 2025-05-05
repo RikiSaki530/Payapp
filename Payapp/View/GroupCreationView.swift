@@ -13,10 +13,10 @@ import FirebaseFirestore
 struct GroupCreationView: View {
     
     @Binding var user : User
-    @State var group = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
+    @State var newgroup = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
     @State private var shouldNavigate = false
     
-    @StateObject var Memberdata = MemberList() // ClubMembersデータ
+    @StateObject var Memberdata = MemberList()
     @StateObject var listData = PayList() // PayListデータ
 
     
@@ -26,15 +26,15 @@ struct GroupCreationView: View {
             
             VStack(spacing : 30){
                 
-                TextField("グループ名" , text: $group.groupName)
+                TextField("グループ名" , text: $newgroup.groupName)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
                 
                 Button("グループを作成") {
-                    if !group.groupName.isEmpty{
+                    if !newgroup.groupName.isEmpty {
                         CanMakeGroup()
-                        shouldNavigate = true  // ← これで遷移が発動する
+                            shouldNavigate = true
                     }
                 }
                 .colorMultiply(.black)
@@ -44,7 +44,7 @@ struct GroupCreationView: View {
                 
             }
                 .navigationDestination(isPresented: $shouldNavigate) {
-                    ContentView(user: $user, group: $group)
+                    ContentView(user: $user, group: $newgroup)
                         .environmentObject(Memberdata)
                         .environmentObject(listData)
                 }
@@ -54,29 +54,24 @@ struct GroupCreationView: View {
     
     
     func CanMakeGroup(){
-        
+            
         //グループのIDを設定
         let db = Firestore.firestore()
         let docRef = db.collection("Group").document()
-        group.groupCode = docRef.documentID
-
+        newgroup.groupCode = docRef.documentID
+        
         //グループリーダー規定
-        group.Leader[user.name] = user.UserID
-        group.AccountMemberList[user.name] = user.UserID
+        newgroup.Leader[user.name] = user.UserID
+        newgroup.AccountMemberList[user.name] = user.UserID
         //groupListに追加
-        user.groupList.append(group)
+        user.groupList.append(newgroup)
         //adminは無条件にtrue
-        user.admin[group.groupCode] = true
+        user.admin[newgroup.groupCode] = true
         
-        group.groupFireAdd()
+        newgroup.groupFireAdd()
         user.userfirechange()
+        
     }
+    
 }
 
-struct GroupCreationView_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var newUser = User(name : "" ,Mailaddress: "", Password: "", admin: [:],groupList : [], UserID: 0)
-        
-        GroupCreationView(user: $newUser)
-    }
-}

@@ -48,21 +48,16 @@ struct PayListaddView: View {
     
     
     func checkGroupExistence() {
-        
+            
         let db = Firestore.firestore()
-        
+            
         db.collection("Group").document(group.groupCode).getDocument { document, error in
             if let error = error {
                 print("エラーが発生しました: \(error.localizedDescription)")
                 return
             }
-            
             group.groupFireChange() // 変更処理を呼び出す
-            
         }
     }
     
 }
-
-
-

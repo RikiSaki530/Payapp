@@ -56,6 +56,7 @@ struct NameSettingView: View {
     
     
     func checkUserExistence() {
+        
         let db = Firestore.firestore()
         
         // Firestoreからuserの存在を確認

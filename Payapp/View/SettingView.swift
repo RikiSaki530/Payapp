@@ -26,9 +26,3 @@ struct SettingView: View {
     }
 }
 
-struct SettingView_PreView : PreviewProvider{
-    static var previews: some View{
-        @State var user = User(name : "" ,Mailaddress: "", Password: "", admin: [:], groupList : [], UserID: 0)
-        SettingView(user: $user)
-    }
-}

@@ -19,11 +19,11 @@ struct User : Identifiable{
     var Password : String
     var admin : [String : Bool] //管理者権限を与える
     var groupList : [ GroupData ] = []
-    var UserID : Int
+    var UserID : String
     
     var id = UUID()
     
-    init(name: String, Mailaddress: String, Password: String, admin: [String : Bool], groupList: [GroupData], UserID: Int) {
+    init(name: String, Mailaddress: String, Password: String, admin: [String : Bool], groupList: [GroupData], UserID: String) {
         self.name = name
         self.Mailaddress = Mailaddress
         self.Password = Password
@@ -62,14 +62,14 @@ struct User : Identifiable{
         let changeRef = db.collection("User").document(String(self.UserID))
         
         let userData: [String: Any] = [
-                "name": self.name,
-                "Mailaddress": self.Mailaddress,
-                "Password": self.Password,
-                "admin": self.admin,
-                "UserID": self.UserID,
-                "groupList": self.groupList.map { $0.toDict() }
-            ]
-            
+            "name": self.name,
+            "Mailaddress": self.Mailaddress,
+            "Password": self.Password,
+            "admin": self.admin,
+            "UserID": self.UserID,
+            "groupList": self.groupList.map { $0.toDict() }
+        ]
+
         changeRef.updateData(userData) { error in
             if let error = error {
                 print("データ更新失敗: \(error)")
@@ -78,9 +78,7 @@ struct User : Identifiable{
             }
         }
     }
-    
-
-    
+            
 }
 
 extension GroupData {

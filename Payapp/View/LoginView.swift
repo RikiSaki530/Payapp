@@ -13,7 +13,7 @@ import FirebaseAuth
 
 struct LoginView: View {
     
-    @State var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: [:],  groupList : [], UserID: 0)
+    @State var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: [:],  groupList : [], UserID: "")
     @State private var loginSuccess = false
     @State private var errorMessage: String?
     
@@ -106,8 +106,8 @@ struct LoginView: View {
                 guard
                     let name = dict["groupName"] as? String,
                     let code = dict["groupCode"] as? String,
-                    let leader = dict["Leader"] as? [String: Int],
-                    let accountMembers = dict["AccountMemberList"] as? [String: Int],
+                    let leader = dict["Leader"] as? [String: String],
+                    let accountMembers = dict["AccountMemberList"] as? [String: String],
                     let rawMemberList = dict["MemberList"] as? [ClubMember],
                     let rawPayList = dict["PayList"] as? [PayItem]
                 else {
@@ -131,7 +131,7 @@ struct LoginView: View {
                         Password: data["Password"] as? String ?? "",
                         admin: data["admin"] as? [String: Bool] ?? [:],
                         groupList: groups,
-                        UserID: data["UserID"] as? Int ?? 0
+                        UserID: data["UserID"] as? String ?? ""
                     )
 
                     completion(user)

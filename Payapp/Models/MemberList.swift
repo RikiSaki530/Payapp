@@ -24,15 +24,15 @@ class MemberList : ObservableObject{
     //
     func addPaymentitem(PaymentItem : PayItem) {
         let unpaidItem = PayItem(name: PaymentItem.name, price: PaymentItem.price, paystatus: "❌")
-            for member in members {
-                member.paymentStatus.append(unpaidItem)
+            for i in members.indices {
+                    members[i].paymentStatus.append(unpaidItem)
             }
     }
     
     func removeallPaymentitem(rmpayitem : String) {
-        for member in members {
-            if let index = member.paymentStatus.firstIndex(where: { $0.name == rmpayitem }) {
-                member.paymentStatus.remove(at: index)
+        for i in members.indices {
+            if let index = members[i].paymentStatus.firstIndex(where: { $0.name == rmpayitem }) {
+                members[i].paymentStatus.remove(at: index)
             }
         }
     }

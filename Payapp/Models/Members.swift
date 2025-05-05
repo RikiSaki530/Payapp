@@ -7,18 +7,14 @@
 
 import SwiftUI
 
-class ClubMember: ObservableObject, Identifiable {
-    
-    var name: String //名前
-    var schoolnumber: String //学籍番号
-    @Published var grade: String //学年
-    @Published var paymentStatus: [PayItem] = [ ]// 支払い状況を保存
-    
-    var id = UUID() // `Identifiable` に必要
-    
-    
-    
-    init(name: String, grade: String, schoolnumber: String, paymentStatus: [PayItem]=[]  ) {
+struct ClubMember: Identifiable, Codable, Hashable {
+    var id = UUID()                // Firestore保存時に除外してもOK
+    var name: String              // 名前
+    var schoolnumber: String     // 学籍番号
+    var grade: String            // 学年
+    var paymentStatus: [PayItem] // 支払い状況
+
+    init(name: String, grade: String, schoolnumber: String, paymentStatus: [PayItem] = []) {
         self.name = name
         self.grade = grade
         self.schoolnumber = schoolnumber
