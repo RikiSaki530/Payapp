@@ -11,7 +11,7 @@ import FirebaseFirestore
 
 struct NameSettingView: View {
     
-    @Binding var newUser : User
+    @ObservedObject var newUser : User
     @State private var shouldNavigate = false  // 遷移フラグ
     @State private var errorMessage: String?   // エラーメッセージ用
     
@@ -20,6 +20,7 @@ struct NameSettingView: View {
         NavigationStack{
             
             VStack(spacing: 30){
+                
                 TextField("名前を入力" , text: $newUser.name)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
@@ -49,7 +50,7 @@ struct NameSettingView: View {
             // 遷移先のView
             // navigationDestination は NavigationStack 内で使用されるべき
             .navigationDestination(isPresented: $shouldNavigate) {
-                GroupselectView(user: $newUser)
+                GroupselectView(user: newUser)
             }
         }
     }
@@ -60,7 +61,7 @@ struct NameSettingView: View {
         let db = Firestore.firestore()
         
         // Firestoreからuserの存在を確認
-        db.collection("User").document(String(newUser.UserID)).getDocument { document, error in
+        db.collection("User").document(newUser.UserID).getDocument { document, error in
             if let error = error {
                 print("エラーが発生しました: \(error.localizedDescription)")
                 DispatchQueue.main.async {

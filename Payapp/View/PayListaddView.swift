@@ -44,6 +44,9 @@ struct PayListaddView: View {
                 }
             }
         }
+        .onDisappear{
+            checkGroupExistence()
+        }
     }
     
     

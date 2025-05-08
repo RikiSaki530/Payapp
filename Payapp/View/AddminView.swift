@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddminView : View{
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     var body : some View{

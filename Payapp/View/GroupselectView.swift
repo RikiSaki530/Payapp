@@ -11,7 +11,7 @@ import SwiftUI
 
 struct GroupselectView: View {
     
-    @Binding var user : User
+    @ObservedObject var user : User
     
     var body: some View {
         
@@ -23,7 +23,7 @@ struct GroupselectView: View {
                     .frame(height : 40)
                 
                 NavigationLink("グループを作成"){
-                    GroupCreationView(user: $user)
+                    GroupCreationView(user: user)
                 }
                     .colorMultiply(.black)
                     .frame(width: 300 , height: 60)
@@ -34,7 +34,7 @@ struct GroupselectView: View {
                     .frame(height : 40)
                 
                 NavigationLink("グループに参加"){
-                    GroupJoinView(user : $user)
+                    GroupJoinView(user : user)
                 }
                 .colorMultiply(.black)
                 .frame(width: 300 , height: 60)

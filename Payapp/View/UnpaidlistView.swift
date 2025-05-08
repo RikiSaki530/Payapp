@@ -12,7 +12,7 @@ import FirebaseFirestore
 struct UnpaidlistView: View {
     
     @Binding var item: String  // 対象の支払い項目名（例：「4月会費」）
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     @EnvironmentObject var data: MemberList
@@ -56,6 +56,9 @@ struct UnpaidlistView: View {
         }
         .onAppear {
             unpaidMemberList()
+        }
+        .onDisappear{
+            checkGroupExistence()
         }
     }
     

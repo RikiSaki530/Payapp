@@ -21,5 +21,14 @@ struct ClubMember: Identifiable, Codable, Hashable {
         self.paymentStatus = paymentStatus
     }
     
+    // Firestore用: 辞書に変換
+    func toDict() -> [String: Any] {
+        return [
+            "name": name,
+            "schoolnumber": schoolnumber,
+            "grade": grade,
+            "paymentStatus": paymentStatus.map { $0.toDict() } // PayItemも辞書に変換
+        ]
+    }
     
 }

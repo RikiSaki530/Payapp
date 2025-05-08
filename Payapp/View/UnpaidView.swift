@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UnpaidView: View {
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     @EnvironmentObject var data: MemberList
@@ -24,7 +24,7 @@ struct UnpaidView: View {
                 ForEach($unpaidlist, id: \.self) { $item in
                     Section(item) {
                         // unpaidMemberを使って未払いのメンバーを表示
-                        UnpaidlistView(item: $item, user :$user , group: $group)
+                        UnpaidlistView(item: $item, user :user , group: $group)
                     }
                 }
             }

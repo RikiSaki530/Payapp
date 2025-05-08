@@ -8,7 +8,7 @@ import SwiftUI
 
 struct SettingView: View {
     
-    @Binding var user :User
+    @ObservedObject var user :User
     
     var body: some View {
         
@@ -19,7 +19,7 @@ struct SettingView: View {
                 }
                 
                 NavigationLink("グループリストに戻る"){
-                    GroupListView(existingUser : $user)
+                    GroupListView(existingUser : user)
                 }
             }
         }

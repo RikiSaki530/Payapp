@@ -10,10 +10,11 @@
  */
 
 import SwiftUI
+import FirebaseFirestore
 
 struct MemberView: View {
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     @EnvironmentObject var data: MemberList // 親ビューから渡されたデータ
@@ -24,7 +25,7 @@ struct MemberView: View {
             // メンバーのリストを表示
             ForEach($data.members) { $member in
                 NavigationLink {
-                    IndividualView(individual: $member , user: $user, group: $group) // 個別のメンバー詳細を表示
+                    IndividualView(individual: $member , user: user, group: $group) // 個別のメンバー詳細を表示
                 } label: {
                     ClubMemberRow(member: $member) // ClubMemberRowに渡す
                 }
@@ -40,6 +41,9 @@ struct MemberView: View {
                 }
             }
         }
+        .onDisappear{
+            memberfireadd()
+        }
     }
     
     func deleteMember(at offsets : IndexSet){
@@ -48,6 +52,21 @@ struct MemberView: View {
             data.removeallPaymentitem(rmpayitem: deletedMember.name)
         }
         data.members.remove(atOffsets: offsets)
+    }
+    
+    func memberfireadd() {
+        let db = Firestore.firestore()
+        
+        db.collection("Group").document(group.groupCode).updateData([
+            "MemberList": data
+          ]) { error in
+            if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("更新成功")
+            }
+        }
+        
     }
 }
 

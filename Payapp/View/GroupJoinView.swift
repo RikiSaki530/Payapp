@@ -13,7 +13,7 @@ import FirebaseAuth
 
 struct GroupJoinView: View {
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @State var group = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
     
     @StateObject var Memberdata = MemberList() // ClubMembersデータ
@@ -47,7 +47,7 @@ struct GroupJoinView: View {
                        
             }
             .navigationDestination(isPresented: $shouldNavigate){
-                ContentView(user:$user , group: $group)
+                ContentView(user:user , group: $group)
                     .environmentObject(Memberdata)
                     .environmentObject(listData)
             }
@@ -85,7 +85,7 @@ struct GroupJoinView: View {
                 self.group.Leader[user.name] = user.UserID
                 
                 // ユーザーのグループリストに追加
-                user.groupList.append(group)
+                user.groupList[group.groupName] = group.groupCode
                 user.admin[group.groupCode] = false
                 //参加者として管理者権限はfalseに設定
                 

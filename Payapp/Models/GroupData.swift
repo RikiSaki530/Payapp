@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Firebase
+import FirebaseFirestore
 
 
 struct GroupData: Identifiable , Hashable , Codable{
@@ -39,9 +39,10 @@ struct GroupData: Identifiable , Hashable , Codable{
         hasher.combine(id)
     }
     
+    
     // Firestore へ追加
     mutating func groupFireAdd() {
-            
+                
         let db = Firestore.firestore()
             
         let groupData: [String: Any] = [
@@ -63,6 +64,8 @@ struct GroupData: Identifiable , Hashable , Codable{
             }
         }
     }
+
+            
         
     // Firestore のデータを更新
     func groupFireChange() {
@@ -88,3 +91,5 @@ struct GroupData: Identifiable , Hashable , Codable{
     }
         
 }
+
+

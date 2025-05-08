@@ -11,7 +11,7 @@ struct IndividualView : View{
     
     @Binding var individual : ClubMember
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     var body: some View{
@@ -24,7 +24,7 @@ struct IndividualView : View{
             Text("学籍番号 : "+(individual.schoolnumber))
                 .font(.title)
             
-            PaylistView(user: $user, group: $group, member: individual)
+            PaylistView(user: user, group: $group, member: individual)
         }
     }
 }

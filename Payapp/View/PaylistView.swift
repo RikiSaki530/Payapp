@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 struct PaylistView: View {
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     @State var member: ClubMember
@@ -51,6 +51,9 @@ struct PaylistView: View {
                 selectValues[item.id] = symbolToTag(item.paystatus)
             }
         }
+        .onDisappear{
+            checkGroupExistence()
+        }
     }
 
     func symbolToTag(_ symbol: String) -> Int {
@@ -74,13 +77,13 @@ struct PaylistView: View {
     func checkGroupExistence() {
         let db = Firestore.firestore()
         
+        //ここで変更したデータを保存するようにしたい
         db.collection("Group").document(group.groupCode).getDocument { document, error in
             if let error = error {
                 print("エラーが発生しました: \(error.localizedDescription)")
-                return
+            }else{
+                print("データ追加成功！")
             }
-            
-            group.groupFireChange()
             
         }            
         

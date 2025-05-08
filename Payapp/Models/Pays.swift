@@ -18,4 +18,17 @@ struct PayItem: Identifiable, Codable , Hashable {
         self.price = price
         self.paystatus = paystatus
     }
+    
+    // Firestoreに保存するための辞書変換
+    func toDict() -> [String: Any] {
+        var dict: [String: Any] = [
+            "name": name,
+            "paystatus": paystatus
+        ]
+        if let price = price {
+            dict["price"] = price
+        }
+        return dict
+    }
+    
 }

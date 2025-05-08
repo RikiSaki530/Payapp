@@ -12,18 +12,18 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
-struct User : Identifiable{
-
-    var name : String
-    var Mailaddress : String
-    var Password : String
-    var admin : [String : Bool] //管理者権限を与える
-    var groupList : [ GroupData ] = []
-    var UserID : String
+class User: ObservableObject, Identifiable {
+    
+    @Published var name: String
+    @Published var Mailaddress: String
+    @Published var Password: String
+    @Published var admin: [String: Bool]
+    @Published var groupList: [String : String]
+    @Published var UserID: String
     
     var id = UUID()
     
-    init(name: String, Mailaddress: String, Password: String, admin: [String : Bool], groupList: [GroupData], UserID: String) {
+    init(name: String, Mailaddress: String, Password: String, admin: [String: Bool], groupList: [String : String], UserID: String) {
         self.name = name
         self.Mailaddress = Mailaddress
         self.Password = Password
@@ -31,9 +31,8 @@ struct User : Identifiable{
         self.groupList = groupList
         self.UserID = UserID
     }
-
     
-    //作成
+    // Firestore にユーザー新規追加
     func userfireadd() {
         let db = Firestore.firestore()
         
@@ -43,23 +42,22 @@ struct User : Identifiable{
             "Password": self.Password,
             "admin": self.admin,
             "UserID": self.UserID,
-            "groupList": self.groupList.map { $0.toDict() }
+            "groupList": self.groupList
         ]
         
-        db.collection("User").document(String(self.UserID)).setData(userData) { error in
+        db.collection("User").document(self.UserID).setData(userData) { error in
             if let error = error {
-                print("データ追加失敗: \(error)")
+                print("❌ データ追加失敗: \(error)")
             } else {
-                print("データ追加に成功しました。")
+                print("✅ データ追加に成功しました。")
             }
         }
     }
     
-    //変更
+    // Firestore 上のユーザー情報を更新
     func userfirechange() {
-        
         let db = Firestore.firestore()
-        let changeRef = db.collection("User").document(String(self.UserID))
+        let changeRef = db.collection("User").document(self.UserID)
         
         let userData: [String: Any] = [
             "name": self.name,
@@ -67,27 +65,17 @@ struct User : Identifiable{
             "Password": self.Password,
             "admin": self.admin,
             "UserID": self.UserID,
-            "groupList": self.groupList.map { $0.toDict() }
+            "groupList": self.groupList
         ]
-
+        
         changeRef.updateData(userData) { error in
             if let error = error {
-                print("データ更新失敗: \(error)")
+                print("❌ データ更新失敗: \(error)")
             } else {
-                print("データ更新に成功しました。")
+                print("✅ データ更新に成功しました。")
             }
         }
     }
-            
 }
 
-extension GroupData {
-    func toDict() -> [String: Any] {
-        return [
-            "groupName": groupName,
-            "groupCode": groupCode,
-            "Leader": Leader,
-            "MemberList": MemberList
-        ]
-    }
-}
+

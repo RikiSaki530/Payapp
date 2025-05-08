@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MastPayView: View{
     
-    @Binding var user : User
+    @ObservedObject var user : User
     @Binding var group : GroupData
     
     //paylist

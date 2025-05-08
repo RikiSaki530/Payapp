@@ -45,6 +45,7 @@ struct MemberAddView : View{
                 Button("完了"){
                     if !newMember.name.isEmpty && !Memberdata.members.contains(where: { $0.name == newMember.name }) {
                         Memberdata.members.append(newMember)
+                        memberfireadd()
                         dismiss()
                     }
                 }
@@ -53,18 +54,22 @@ struct MemberAddView : View{
         
     }
     
-    func checkGroupExistence() {
+    func memberfireadd() {
         let db = Firestore.firestore()
         
-        db.collection("Group").document(group.groupCode).getDocument { document, error in
+        db.collection("Group").document(group.groupCode).updateData([
+            "MemberList": Memberdata
+          ]) { error in
             if let error = error {
-                print("エラーが発生しました: \(error.localizedDescription)")
-                return
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("更新成功")
             }
-        group.groupFireChange() // 変更処理を呼び出す
-            
         }
-    }
         
+    }
+    
 }
+        
+
         

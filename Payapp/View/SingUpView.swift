@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 import FirebaseAuth
 
 struct SingUpView: View {
     
-    @State var newUser = User(name: "", Mailaddress: "", Password: "", admin: [:], groupList: [], UserID: "")
+    @StateObject var newUser = User(name: "", Mailaddress: "", Password: "", admin: [:], groupList: [:], UserID: "")
     @State private var isRegistered = false
     @State private var errorMessage = ""
     
@@ -32,12 +33,15 @@ struct SingUpView: View {
                 
                 Button("OK") {
                     register(
-                        name: newUser.name, // NameSettingViewで後で設定
+                        name: newUser.name,
                         email: newUser.Mailaddress,
                         password: newUser.Password
-                    ) { user in
-                        if let user = user {
-                            self.newUser = user // 新しいユーザー情報を更新
+                    ) { createdUser in
+                        if let createdUser = createdUser {
+                            newUser.name = createdUser.name
+                            newUser.Mailaddress = createdUser.Mailaddress
+                            newUser.Password = createdUser.Password
+                            newUser.UserID = createdUser.UserID
                             isRegistered = true
                         } else {
                             errorMessage = "登録に失敗しました"
@@ -56,16 +60,14 @@ struct SingUpView: View {
             }
             // ✅ VStack に navigationDestination を適用
             .navigationDestination(isPresented: $isRegistered) {
-                NameSettingView(newUser: $newUser) // 新しいユーザーを渡す
+                NameSettingView(newUser: newUser) // 新しいユーザーを渡す
             }
         }
     }
     
     
     func register(name: String, email: String, password: String, completion: @escaping (User?) -> Void) {
-        
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            
             if let error = error {
                 print("登録失敗: \(error.localizedDescription)")
                 completion(nil)
@@ -83,13 +85,12 @@ struct SingUpView: View {
                 Mailaddress: email,
                 Password: password,
                 admin: [:],
-                groupList: [],
+                groupList: [:],
                 UserID: authUser.uid
             )
             
-            // ユーザーを Firestore に追加後に次の処理を行う
-            completion(newUser)  // 登録したユーザーを返す
-            
+            completion(newUser)
         }
     }
+    
 }
