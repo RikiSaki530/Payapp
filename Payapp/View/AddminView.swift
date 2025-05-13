@@ -6,13 +6,23 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
-struct AddminView : View{
+struct AddminView: View {
     
-    @ObservedObject var user : User
-    @Binding var group : GroupData
+    @ObservedObject var user: User
+    @ObservedObject var group: GroupData
     
-    var body : some View{
-        Text("addmin")
+    var body: some View {
+        let members = group.AccountMemberList
+            .sorted(by: { $0.key < $1.key })
+            .map { MemberEntry(key: $0.key, value: $0.value) }
+        
+        return List {
+            ForEach(members) { entry in
+                AddminchangeView(group: group, userId: entry.value, usrname: entry.key)
+            }
+        }
     }
+
 }

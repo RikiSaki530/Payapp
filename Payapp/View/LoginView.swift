@@ -13,9 +13,10 @@ import FirebaseAuth
 
 struct LoginView: View {
     
-    @StateObject var ExistingUser = User(name: "", Mailaddress: "", Password: "", admin: [:],  groupList : [:], UserID: "")
+    @StateObject var ExistingUser = User(name: "", Mailaddress: "", admin: [:],  groupList : [:], UserID: "")
     @State private var loginSuccess = false
     @State private var errorMessage: String?
+    @State private var password : String = ""
     
     var body: some View {
         
@@ -30,18 +31,43 @@ struct LoginView: View {
                     .keyboardType(.emailAddress)
                     .disableAutocorrection(true)
                 
-                TextField("パスワード" , text: $ExistingUser.Password)
+                TextField("パスワード" , text: $password)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
                 
                 Button("ログイン") {
-                    login(email: ExistingUser.Mailaddress, password: ExistingUser.Password) { user in
-                        if user != nil {
+                    login(email: ExistingUser.Mailaddress, password: password) { user in
+                        if let user = user {
                             self.loginSuccess = true
+                            
+                            // ✅ @StateObject の ExistingUser に代入
+                            ExistingUser.name = user.name
+                            ExistingUser.Mailaddress = user.Mailaddress
+                            ExistingUser.admin = user.admin
+                            ExistingUser.UserID = user.UserID
+                            ExistingUser.groupList = user.groupList
+                            //確認用
+                            print(ExistingUser.name)
+                            
+                            print("UserDefaults saved")
+                            // UserDefaults に保存
+                            UserDefaults.standard.set(user.UserID, forKey: "userID")
+                            UserDefaults.standard.set(user.Mailaddress, forKey: "userEmail")
+                            UserDefaults.standard.set(user.name, forKey: "userName")
+                            
+                            
+                            if let name = UserDefaults.standard.string(forKey: "userName") {
+                                print("保存されたユーザー名: \(name)")
+                            } else {
+                                print("ユーザー名がUserDefaultsに保存されていません")
+                            }
+                            
+                            
                         } else {
                             self.errorMessage = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。"
                         }
+                        
                     }
                 }
                 .padding()
@@ -96,53 +122,22 @@ struct LoginView: View {
                 }
                 
                 let data = document.data()
-                
-                // GroupData配列に変換
-                _ = (data["groupList"] as? [[String: Any]] ?? []).compactMap { dict -> GroupData? in
-                    guard
-                        let name = dict["groupName"] as? String,
-                        let code = dict["groupCode"] as? String,
-                        let leader = dict["Leader"] as? [String: String],
-                        let accountMembers = dict["AccountMemberList"] as? [String: String],
-                        let rawMemberList = dict["MemberList"] as? [ClubMember],
-                        let rawPayList = dict["PayList"] as? [PayItem]
-                    else {
-                        return nil
-                    }
-                    
-                    return GroupData(
-                        groupName: name,
-                        groupCode: code,
-                        Leader: leader,
-                        AccountMemberList: accountMembers,
-                        MemberList: rawMemberList,
-                        PayList: rawPayList
-                    )
-                }
-                
+                let fetchedUser = User(
+                    name: data["name"] as? String ?? "",
+                    Mailaddress: data["Mailaddress"] as? String ?? "",
+                    admin: data["admin"] as? [String: Bool] ?? [:],
+                    groupList: data["groupList"] as? [String: String] ?? [:],
+                    UserID: data["UserID"] as? String ?? ""
+                )
                 
                 DispatchQueue.main.async {
-                    ExistingUser.name = data["name"] as? String ?? ""
-                    ExistingUser.Mailaddress = data["Mailaddress"] as? String ?? ""
-                    ExistingUser.Password = data["Password"] as? String ?? ""
-                    ExistingUser.admin = data["admin"] as? [String: Bool] ?? [:]
-                    ExistingUser.UserID = data["UserID"] as? String ?? ""
-                    ExistingUser.groupList = data["groupList"] as? [String : String] ?? [:]
+                    completion(fetchedUser)
                 }
-                
-                if ExistingUser.UserID.isEmpty{
-                    print("空")
-                }
-                
-                completion(ExistingUser)
             }
         }
     }
+    
 }
+    
 
 
-struct LogicalView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
-}

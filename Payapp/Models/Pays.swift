@@ -7,28 +7,39 @@
 
 import SwiftUI
 
-struct PayItem: Identifiable, Codable , Hashable {
-    var id = UUID()
-    var name: String      // 例:「4月会費」
-    var price: Int?        // 例: 1000円
-    var paystatus: String  //支払い項目
+struct PayItem: Identifiable, Hashable, Codable {
+    var id = UUID()          // Firestore保存時に除外しても良い
+    var name: String         // 例:「4月会費」
+    var price: Int?          // 例: 1000円
+    var paystatus: String    // 支払い項目
     
-    init(name:String , price : Int? , paystatus :String){
+    // イニシャライザ
+    init(name: String, price: Int?, paystatus: String) {
         self.name = name
         self.price = price
         self.paystatus = paystatus
     }
-    
-    // Firestoreに保存するための辞書変換
-    func toDict() -> [String: Any] {
-        var dict: [String: Any] = [
-            "name": name,
-            "paystatus": paystatus
-        ]
-        if let price = price {
-            dict["price"] = price
-        }
-        return dict
+
+    // Firestoreからのデータを基にPayItemを作成
+    init(from firestoreData: [String: Any]) {
+        self.name = firestoreData["name"] as? String ?? ""
+        self.price = firestoreData["price"] as? Int
+        self.paystatus = firestoreData["paystatus"] as? String ?? ""
     }
-    
+
+    // `id` を除外してデコード
+    enum CodingKeys: String, CodingKey {
+        case name
+        case price
+        case paystatus
+    }
+
+    // Firestoreのデータを辞書形式に変換
+    func toDictionary() -> [String: Any] {
+        return [
+            "name": self.name,
+            "price": self.price as Any,
+            "paystatus": self.paystatus
+        ]
+    }
 }

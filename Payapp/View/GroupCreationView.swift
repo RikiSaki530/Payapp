@@ -26,6 +26,7 @@ struct GroupCreationView: View {
     @StateObject var listData = PayList() // PayListデータ
     
     
+    
     var body: some View {
         
         NavigationStack{
@@ -62,7 +63,7 @@ struct GroupCreationView: View {
             
             
             .navigationDestination(isPresented: $shouldNavigate) {
-                ContentView(user: user, group: $newgroup)
+                ContentView(user: user, group: newgroup )
                     .environmentObject(Memberdata)
                     .environmentObject(listData)
             }
@@ -96,11 +97,15 @@ struct GroupCreationView: View {
         newgroup.AccountMemberList[user.name] = user.UserID
         //groupListに追加
         user.groupList[newgroup.groupName] = newgroup.groupCode
+        print("✅ AccountMemberList:", newgroup.AccountMemberList)
         //adminは無条件にtrue
         user.admin[newgroup.groupCode] = true
         
-        newgroup.groupFireAdd()
-        user.userfirechange()
+        newgroup.MemberList = []
+        newgroup.PayList = []
+        
+        newgroup.fireadd()
+        user.fireadd()
         
     }
 }

@@ -50,7 +50,7 @@ struct NameSettingView: View {
             // 遷移先のView
             // navigationDestination は NavigationStack 内で使用されるべき
             .navigationDestination(isPresented: $shouldNavigate) {
-                GroupselectView(user: newUser)
+                GroupListView(existingUser: newUser)
             }
         }
     }
@@ -70,7 +70,7 @@ struct NameSettingView: View {
                 return
             }
             
-            newUser.userfireadd()
+            newUser.fireadd()
             
         }
     }

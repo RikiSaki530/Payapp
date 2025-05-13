@@ -13,7 +13,7 @@ struct UnpaidlistView: View {
     
     @Binding var item: String  // 対象の支払い項目名（例：「4月会費」）
     @ObservedObject var user : User
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     
     @EnvironmentObject var data: MemberList
     @State private var selectValues: [UUID: Int] = [:]
@@ -39,6 +39,7 @@ struct UnpaidlistView: View {
                                     if let index = data.members.firstIndex(where: { $0.id == member.id }),
                                        let payIndex = data.members[index].paymentStatus.firstIndex(where: { $0.name == item }) {
                                         data.members[index].paymentStatus[payIndex].paystatus = tagToSymbol(newValue)
+                                        memberfireadd()
                                     }
                                 }
                             }
@@ -56,9 +57,6 @@ struct UnpaidlistView: View {
         }
         .onAppear {
             unpaidMemberList()
-        }
-        .onDisappear{
-            checkGroupExistence()
         }
     }
     
@@ -80,16 +78,21 @@ struct UnpaidlistView: View {
         }
     }
     
-    func checkGroupExistence() {
+    func memberfireadd() {
         let db = Firestore.firestore()
+        // Groupドキュメントを取得
+        let docRef = db.collection("Group").document(group.groupCode)
         
-        db.collection("Group").document(group.groupCode).getDocument { document, error in
+        let Mdata = data.members.map { $0.toDictionary() }
+        
+        docRef.updateData([
+                "MemberList": Mdata
+        ]) { error in
             if let error = error {
-                print("エラーが発生しました: \(error.localizedDescription)")
-                return
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("MemberAddView:データを更新しました")
             }
-            group.groupFireChange() // 変更処理を呼び出す
-            
         }
     }
     
@@ -104,4 +107,5 @@ struct UnpaidlistView: View {
             }
         }
     }
+    
 }

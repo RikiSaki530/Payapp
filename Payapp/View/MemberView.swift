@@ -15,7 +15,7 @@ import FirebaseFirestore
 struct MemberView: View {
     
     @ObservedObject var user : User
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     
     @EnvironmentObject var data: MemberList // 親ビューから渡されたデータ
     @EnvironmentObject var listData: PayList // 親ビューから渡されたデータ
@@ -25,7 +25,7 @@ struct MemberView: View {
             // メンバーのリストを表示
             ForEach($data.members) { $member in
                 NavigationLink {
-                    IndividualView(individual: $member , user: user, group: $group) // 個別のメンバー詳細を表示
+                    IndividualView(individual: $member , user: user, group: group) // 個別のメンバー詳細を表示
                 } label: {
                     ClubMemberRow(member: $member) // ClubMemberRowに渡す
                 }
@@ -35,38 +35,62 @@ struct MemberView: View {
         .toolbar {
             ToolbarItem {
                 NavigationLink("追加") {
-                    MemberAddView(group: $group)
+                    MemberAddView(group: group)
                         .environmentObject(data) // MemberListデータを渡す
                         .environmentObject(listData) // PayListデータを渡す
                 }
             }
         }
+        .onAppear{
+            paylistfireadd()
+        }
         .onDisappear{
             memberfireadd()
+            paylistfireadd()
         }
     }
     
-    func deleteMember(at offsets : IndexSet){
-        for index in offsets{
+    func deleteMember(at offsets: IndexSet) {
+        for index in offsets {
             let deletedMember = data.members[index]
             data.removeallPaymentitem(rmpayitem: deletedMember.name)
         }
         data.members.remove(atOffsets: offsets)
     }
     
-    func memberfireadd() {
+    func memberfireadd(){
         let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
         
-        db.collection("Group").document(group.groupCode).updateData([
-            "MemberList": data
-          ]) { error in
+        let Mdata = data.members.map { $0.toDictionary() }
+
+        docRef.updateData([
+            "MemberList": Mdata
+        ]){ error in
             if let error = error {
                 print("更新エラー: \(error.localizedDescription)")
             } else {
-                print("更新成功")
+                print("MemberView:データを更新しました")
             }
         }
-        
     }
+    
+    func paylistfireadd() {
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Pdata = listData.paylistitem.map{ $0.toDictionary() }
+        
+        docRef.updateData([
+                "PayList": Pdata
+        ]) { error in
+                if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("MemberView:データを更新しました")
+            }
+        }
+    }
+    
+    
 }
-

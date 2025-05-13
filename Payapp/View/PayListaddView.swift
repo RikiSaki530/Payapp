@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 struct PayListaddView: View {
     
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     //新規作成用
     @State var newpayitem = PayItem(name: "", price: nil, paystatus: "➖")
     //PayList
@@ -45,22 +45,43 @@ struct PayListaddView: View {
             }
         }
         .onDisappear{
-            checkGroupExistence()
+            paylistfireadd()
+            memberfireadd()
         }
     }
     
     
-    func checkGroupExistence() {
-            
+    func paylistfireadd() {
         let db = Firestore.firestore()
-            
-        db.collection("Group").document(group.groupCode).getDocument { document, error in
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Pdata = paylist.paylistitem.map{ $0.toDictionary() }
+        
+        docRef.updateData([
+            "PayList": Pdata
+        ]) { error in
             if let error = error {
-                print("エラーが発生しました: \(error.localizedDescription)")
-                return
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("PayListAddView:データを更新しました")
             }
-            group.groupFireChange() // 変更処理を呼び出す
         }
     }
     
+    func memberfireadd(){
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Mdata = Memberdata.members.map { $0.toDictionary() }
+
+        docRef.updateData([
+            "MemberList": Mdata
+        ]){ error in
+            if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("PayListAddView:データを更新しました")
+            }
+        }
+    }
 }

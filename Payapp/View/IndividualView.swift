@@ -12,7 +12,7 @@ struct IndividualView : View{
     @Binding var individual : ClubMember
     
     @ObservedObject var user : User
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     
     var body: some View{
         VStack{
@@ -21,10 +21,8 @@ struct IndividualView : View{
             
             Text("学年 : "+(individual.grade))
                 .font(.title)
-            Text("学籍番号 : "+(individual.schoolnumber))
-                .font(.title)
             
-            PaylistView(user: user, group: $group, member: individual)
+            PaylistView(user: user, group: group, member: $individual)
         }
     }
 }

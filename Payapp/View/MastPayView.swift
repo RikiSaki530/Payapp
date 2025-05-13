@@ -10,7 +10,7 @@ import SwiftUI
 struct MastPayView: View{
     
     @ObservedObject var user : User
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     
     //paylist
     @EnvironmentObject var paylist : PayList
@@ -47,27 +47,3 @@ struct MastPayView: View{
 }
 
 
-/**
-struct ContentSecondView_Previews: PreviewProvider {
-    static var previews: some View {
-        // ⭐️ ダミーデータの作成
-        let previewPaylist = PayList()
-        
-        @State var user1 = User(name: "", Mailaddress: "", Password: "", admin: true, groupList: [] , UserID: 0)
-        
-        @State var user2 = User(name: "", Mailaddress: "", Password: "", admin: false, groupList: [] , UserID: 0)
-        
-        previewPaylist.paylistitem = [
-            PayItem(name: "4月会費", price: 1000, paystatus: "❌"),
-            PayItem(name: "5月会費", price: 1200, paystatus: "⭕️"),
-            PayItem(name: "イベント費", price: 500, paystatus: "➖")
-        ]
-        
-        return
-            MastPayView(user:$user2)
-                .environmentObject(previewPaylist)
-                .environmentObject(MemberList())
-        
-        }
-}
-*/

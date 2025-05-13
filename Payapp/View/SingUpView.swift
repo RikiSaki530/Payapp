@@ -11,9 +11,10 @@ import FirebaseAuth
 
 struct SingUpView: View {
     
-    @StateObject var newUser = User(name: "", Mailaddress: "", Password: "", admin: [:], groupList: [:], UserID: "")
+    @StateObject var newUser = User(name: "", Mailaddress: "",  admin: [:], groupList: [:], UserID: "")
     @State private var isRegistered = false
     @State private var errorMessage = ""
+    @State private var password : String = ""
     
     var body: some View {
         NavigationStack {
@@ -26,7 +27,7 @@ struct SingUpView: View {
                     .keyboardType(.emailAddress)
                     .disableAutocorrection(true)
                 
-                SecureField("パスワード", text: $newUser.Password)
+                SecureField("パスワード", text: $password)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
@@ -35,14 +36,20 @@ struct SingUpView: View {
                     register(
                         name: newUser.name,
                         email: newUser.Mailaddress,
-                        password: newUser.Password
+                        password: password
+        
                     ) { createdUser in
                         if let createdUser = createdUser {
                             newUser.name = createdUser.name
                             newUser.Mailaddress = createdUser.Mailaddress
-                            newUser.Password = createdUser.Password
                             newUser.UserID = createdUser.UserID
                             isRegistered = true
+                            
+                            UserDefaults.standard.set(newUser.UserID, forKey: "userID")
+                            UserDefaults.standard.set(newUser.Mailaddress, forKey: "userEmail")
+                            UserDefaults.standard.set(newUser.name, forKey: "userName")
+                            UserDefaults.standard.synchronize() // デバイスに保存
+                            
                         } else {
                             errorMessage = "登録に失敗しました"
                         }
@@ -83,7 +90,6 @@ struct SingUpView: View {
             let newUser = User(
                 name: name,
                 Mailaddress: email,
-                Password: password,
                 admin: [:],
                 groupList: [:],
                 UserID: authUser.uid

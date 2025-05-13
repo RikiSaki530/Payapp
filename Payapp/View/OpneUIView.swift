@@ -10,36 +10,30 @@ import SwiftUI
 
 struct OpneUIView: View {
     var body: some View {
-        NavigationStack{
-            
-            VStack(spacing : 50){
-                
+        NavigationStack {
+            VStack(spacing: 50) {
                 Text("会計app")
                     .font(.largeTitle)
-                
-                NavigationLink("新規登録"){
+
+                NavigationLink("新規登録") {
                     SingUpView()
                 }
-                    .colorMultiply(.black)
-                    .frame(width: 300 , height: 60)
-                    .background(Color.yellow)
-                    .cornerRadius(10)
-                
-                NavigationLink("ログイン"){
+                .frame(width: 300, height: 60)
+                .background(Color.yellow)
+                .foregroundColor(.black)
+                .cornerRadius(10)
+                .font(.title2)
+
+                NavigationLink("ログイン") {
                     LoginView()
                 }
-                    .colorMultiply(.black)
-                    .frame(width: 300 , height: 60)
-                    .background(Color.yellow)
-                    .cornerRadius(10)
-                
+                .frame(width: 300, height: 60)
+                .background(Color.yellow)
+                .foregroundColor(.black)
+                .cornerRadius(10)
+                .font(.title2)
             }
+            .padding()
         }
-    }
-}
-
-struct OpneUiview_Previews: PreviewProvider {
-    static var previews: some View {
-        OpneUIView()
     }
 }

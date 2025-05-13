@@ -9,17 +9,17 @@ import SwiftUI
 import FirebaseFirestore
 
 
-struct GroupData: Identifiable , Hashable , Codable{
+class GroupData: Identifiable , ObservableObject {
     
-    var groupName: String
-    var groupCode : String
-    var Leader : [String : String]
-    var AccountMemberList : [String : String] //アカウントのメンバー
+    @Published var groupName: String
+    @Published var groupCode : String
+    @Published var Leader : [String : String]
+    @Published var AccountMemberList : [String : String] //アカウントのメンバー
     
-    var MemberList : [ClubMember]
-    var PayList : [PayItem]
+    @Published var MemberList : [ClubMember] = []
+    @Published var PayList : [PayItem] = []
     
-    var id = UUID()
+    @DocumentID var id: String?
     
     init(groupName: String, groupCode: String = "", Leader: [String : String], AccountMemberList: [String : String] ,
          MemberList :[ClubMember] , PayList:[PayItem]) {
@@ -30,66 +30,31 @@ struct GroupData: Identifiable , Hashable , Codable{
         self.MemberList = MemberList
         self.PayList = PayList
     }
-    
-    static func == (lhs: GroupData, rhs: GroupData) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    
-    // Firestore へ追加
-    mutating func groupFireAdd() {
-                
-        let db = Firestore.firestore()
             
-        let groupData: [String: Any] = [
-            "groupName": self.groupName,
-            "groupCode": self.groupCode,
-            "Leader": self.Leader,
-            "AccountMemberList": self.AccountMemberList,
-            "MemberList" : self.MemberList,
-            "PayList" : self.PayList
-        ]
-            
-            
-        // ドキュメントIDは groupCode を使う例（任意）
-        db.collection("Group").document(self.groupCode).setData(groupData) { error in
-            if let error = error {
-                print("グループ追加失敗: \(error)")
-            } else {
-                print("グループ追加に成功しました。")
-            }
-        }
-    }
+    func fireadd() {
+            let db = Firestore.firestore()
+            let changeRef = db.collection("Group").document(self.groupCode)
 
+            // GroupData のプロパティを辞書型に変換
+            let groupData: [String: Any] = [
+                "groupName": self.groupName,
+                "groupCode": self.groupCode,
+                "Leader": self.Leader,
+                "AccountMemberList": self.AccountMemberList,
+                "MemberList": self.MemberList, // ClubMember の配列を辞書に変換
+                "PayList": self.PayList // PayItem の配列を辞書に変換
+            ]
             
-        
-    // Firestore のデータを更新
-    func groupFireChange() {
-        let db = Firestore.firestore()
-        let changeRef = db.collection("Group").document(self.groupCode)
-        
-        let groupData: [String: Any] = [
-            "groupName": self.groupName,
-            "groupCode": self.groupCode,
-            "Leader": self.Leader,
-            "AccountMemberList": self.AccountMemberList,
-            "MemberList" : self.MemberList,
-            "PayList" : self.PayList
-        ]
-            
-        changeRef.updateData(groupData) { error in
+            // Firestore に保存または更新
+        changeRef.setData(groupData) { error in
             if let error = error {
-                print("グループ更新失敗: \(error)")
-            } else {
-                print("グループ更新に成功しました。")
+                    print("グループ情報更新エラー: \(error.localizedDescription)")
+                } else {
+                    print("グループ情報更新成功")
+                }
             }
         }
-    }
-        
+    
 }
 
 

@@ -7,6 +7,7 @@
 
 //グループを作るか入るか選択
 
+/**
 import SwiftUI
 
 struct GroupselectView: View {
@@ -45,4 +46,6 @@ struct GroupselectView: View {
         }
     }
 }
+ 
+ */
 

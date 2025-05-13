@@ -22,6 +22,7 @@ struct GroupJoinView: View {
     @State private var shouldNavigate = false
     
     
+    
     var body: some View {
         NavigationStack{
             
@@ -47,7 +48,7 @@ struct GroupJoinView: View {
                        
             }
             .navigationDestination(isPresented: $shouldNavigate){
-                ContentView(user:user , group: $group)
+                ContentView(user:user , group: group)
                     .environmentObject(Memberdata)
                     .environmentObject(listData)
             }
@@ -82,16 +83,22 @@ struct GroupJoinView: View {
                 
                 // グループのメンバーリストにユーザーを追加
                 self.group.AccountMemberList[user.name] = user.UserID
-                self.group.Leader[user.name] = user.UserID
                 
                 // ユーザーのグループリストに追加
                 user.groupList[group.groupName] = group.groupCode
                 user.admin[group.groupCode] = false
                 //参加者として管理者権限はfalseに設定
                 
-                // ユーザー情報もFirestoreに更新する
-                user.userfirechange()  // ユーザーのgroupListを更新
-                group.groupFireChange() // グループのMemberListを更新
+                // ユーザー情報はFirestoreに更新する
+                user.fireadd()  // ユーザーのgroupListを更新
+                
+                
+                Memberdata.members = group.MemberList
+                listData.paylistitem = group.PayList
+                
+                print(group.MemberList)
+                print(group.PayList)
+                
                 
             } else {
                 print("指定したグループは存在しません")

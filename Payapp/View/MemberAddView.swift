@@ -10,12 +10,12 @@ import FirebaseFirestore
 
 struct MemberAddView : View{
     
-    @Binding var group : GroupData
+    @ObservedObject var group : GroupData
     
     @EnvironmentObject var Memberdata :  MemberList
     @EnvironmentObject var listData : PayList
     
-    @State var newMember : ClubMember = ClubMember(name: "", grade: "", schoolnumber: "" , paymentStatus:[])
+    @State var newMember : ClubMember = ClubMember(name: "", grade: "" , paymentStatus:[])
     
     @Environment(\.dismiss) var dismiss
     
@@ -29,10 +29,6 @@ struct MemberAddView : View{
                 //学年
                 Section("学年"){
                     TextField("grade" , text: $newMember.grade)
-                }
-                //学籍番号
-                Section("学籍番号"){
-                    TextField("schoolnuber" , text: $newMember.schoolnumber)
                 }
             }
         }
@@ -51,22 +47,44 @@ struct MemberAddView : View{
                 }
             }
         }
+        .onDisappear{
+            memberfireadd()
+        }
         
     }
     
-    func memberfireadd() {
+    func paystatusfireadd() {
         let db = Firestore.firestore()
         
-        db.collection("Group").document(group.groupCode).updateData([
-            "MemberList": Memberdata
-          ]) { error in
+        // Groupドキュメントを取得
+        let docRef = db.collection("Group").document(group.groupCode)
+        docRef.updateData([
+                "PayList": listData
+        ]) { error in
+                if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("MemberAddView:データを更新しました")
+            }
+        }
+    }
+
+    func memberfireadd() {
+        let db = Firestore.firestore()
+        // Groupドキュメントを取得
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Mdata = Memberdata.members.map { $0.toDictionary() }
+        
+        docRef.updateData([
+                "MemberList": Mdata
+        ]) { error in
             if let error = error {
                 print("更新エラー: \(error.localizedDescription)")
             } else {
-                print("更新成功")
+                print("MemberAddView:データを更新しました")
             }
         }
-        
     }
     
 }

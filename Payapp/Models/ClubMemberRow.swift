@@ -22,8 +22,4 @@ struct ClubMemberRow : View{
      }
 }
 
-struct ClubMemberRow_Previews : PreviewProvider{
-    static var previews: some View {
-        ClubMemberRow(member: .constant(ClubMember(name: "toshi", grade: "8", schoolnumber: "888", paymentStatus: [])))
-    }
-}
+

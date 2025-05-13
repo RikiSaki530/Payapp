@@ -9,26 +9,42 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import Firebase
 
 //メンバーのリストを管理
 
-class MemberList : ObservableObject{
+class MemberList: ObservableObject, Codable {
     
     @Published var members: [ClubMember] = []
     
+    
+    enum CodingKeys: String, CodingKey {
+        case members
+    }
+    
+    
     init() {
-        // 全員が同じ PayList を参照
         self.members = []
     }
     
-    //
-    func addPaymentitem(PaymentItem : PayItem) {
-        let unpaidItem = PayItem(name: PaymentItem.name, price: PaymentItem.price, paystatus: "❌")
-            for i in members.indices {
-                    members[i].paymentStatus.append(unpaidItem)
-            }
+    
+    
+    // Decodableに準拠するためのイニシャライザ
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedMembers = try container.decode([ClubMember].self, forKey: .members)
+        self.members = decodedMembers
     }
     
+    // Encodableに準拠するためのエンコードメソッド
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(members, forKey: .members) // members をエンコード
+    }
+
+    
+    //これは残しておく
     func removeallPaymentitem(rmpayitem : String) {
         for i in members.indices {
             if let index = members[i].paymentStatus.firstIndex(where: { $0.name == rmpayitem }) {
@@ -37,7 +53,11 @@ class MemberList : ObservableObject{
         }
     }
     
-    func decodeMemberlist(memberlist : [ClubMember]){
-        self.members = memberlist
+    func addPaymentitem(PaymentItem : PayItem) {
+        let unpaidItem = PayItem(name: PaymentItem.name, price: PaymentItem.price, paystatus: "❌")
+        for i in members.indices {
+            members[i].paymentStatus.append(unpaidItem)
+        }
     }
+    
 }
