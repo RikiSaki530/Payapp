@@ -15,7 +15,8 @@ struct UnpaidlistView: View {
     @ObservedObject var user : User
     @ObservedObject var group : GroupData
     
-    @EnvironmentObject var data: MemberList
+    @EnvironmentObject var Memberdata: MemberList
+    
     @State private var selectValues: [UUID: Int] = [:]
     @State private var unpaidMember: [ClubMember] = []
     
@@ -36,9 +37,9 @@ struct UnpaidlistView: View {
                                 if user.admin[group.groupCode] == true {
                                     selectValues[member.id] = newValue
                                     
-                                    if let index = data.members.firstIndex(where: { $0.id == member.id }),
-                                       let payIndex = data.members[index].paymentStatus.firstIndex(where: { $0.name == item }) {
-                                        data.members[index].paymentStatus[payIndex].paystatus = tagToSymbol(newValue)
+                                    if let index = Memberdata.members.firstIndex(where: { $0.id == member.id }),
+                                       let payIndex = Memberdata.members[index].paymentStatus.firstIndex(where: { $0.name == item }) {
+                                        Memberdata.members[index].paymentStatus[payIndex].paystatus = tagToSymbol(newValue)
                                         memberfireadd()
                                     }
                                 }
@@ -57,6 +58,7 @@ struct UnpaidlistView: View {
         }
         .onAppear {
             unpaidMemberList()
+            
         }
     }
     
@@ -83,7 +85,7 @@ struct UnpaidlistView: View {
         // Groupドキュメントを取得
         let docRef = db.collection("Group").document(group.groupCode)
         
-        let Mdata = data.members.map { $0.toDictionary() }
+        let Mdata = Memberdata.members.map { $0.toDictionary() }
         
         docRef.updateData([
                 "MemberList": Mdata
@@ -98,7 +100,7 @@ struct UnpaidlistView: View {
     
     // 未払いメンバーリスト作成
     func unpaidMemberList() {
-        unpaidMember = data.members.filter { member in
+        unpaidMember = Memberdata.members.filter { member in
             member.paymentStatus.contains(where: { $0.name == item && $0.paystatus == "❌" })
         }
         for member in unpaidMember {
@@ -107,5 +109,6 @@ struct UnpaidlistView: View {
             }
         }
     }
+
     
 }

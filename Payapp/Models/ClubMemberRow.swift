@@ -14,12 +14,23 @@ struct ClubMemberRow : View{
         HStack{
             Text(member.name)
                 .font(.title2)
+            
             Spacer()
-                .frame(width: 100)
-            Text(String(member.grade))
-                .font(.title2)
+            
+            if !member.grade.isEmpty{
+                Text("\(member.grade)年")
+                    .font(.title2)
+            }
         }
      }
 }
 
 
+struct ClubMemberRow_Previews : PreviewProvider {
+    static var previews: some View {
+        @State var member = ClubMember(name: "riki" , grade:"2" , paymentStatus: [])
+        List{
+            ClubMemberRow(member: $member)
+        }
+    }
+}

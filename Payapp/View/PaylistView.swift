@@ -14,6 +14,8 @@ struct PaylistView: View {
     @ObservedObject var user : User
     @ObservedObject var group : GroupData
     
+    @EnvironmentObject var data :MemberList
+    
     @Binding var member: ClubMember
     @State private var selectValues: [UUID: Int] = [:]
 
@@ -44,6 +46,7 @@ struct PaylistView: View {
                                 }
                                 
                             }
+                            memberfireadd()
                         }
                         )) {
                             Text("⭕️").tag(1)
@@ -79,6 +82,23 @@ struct PaylistView: View {
         case 2: return "❌"
         case 3: return "➖"
         default: return "❌"
+        }
+    }
+    
+    func memberfireadd(){
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Mdata = data.members.map { $0.toDictionary() }
+
+        docRef.updateData([
+            "MemberList": Mdata
+        ]){ error in
+            if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("MemberView:データを更新しました")
+            }
         }
     }
     

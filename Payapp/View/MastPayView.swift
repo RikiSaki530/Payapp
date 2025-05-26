@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct MastPayView: View{
     
@@ -43,6 +44,46 @@ struct MastPayView: View{
             Memberdata.removeallPaymentitem(rmpayitem: deletedItem.name)
         }
         paylist.paylistitem.remove(atOffsets: offsets)
+        
+        // Firestoreへ更新
+        memberfireadd()    // Memberdataの変更を反映
+        paylistfireadd(){}
+    }
+    
+    func memberfireadd(){
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Mdata = Memberdata.members.map { $0.toDictionary() }
+
+        docRef.updateData([
+            "MemberList": Mdata
+        ]){ error in
+            if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("contentView:データを更新しました")
+            }
+        }
+    }
+    
+    func paylistfireadd(completion: @escaping () -> Void) {
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        let Pdata = paylist.paylistitem.map{ $0.toDictionary() }
+        
+        docRef.updateData([
+                "PayList": Pdata
+        ]) { error in
+                if let error = error {
+                print("更新エラー: \(error.localizedDescription)")
+            } else {
+                print("contentView:データを更新しました")
+            }
+        completion()
+        }
+        
     }
 }
 

@@ -1,23 +1,22 @@
 //
-//  MemberAddView.swift
+//  ChangeUserInfoView.swift
 //  Payapp
 //
-//  Created by 崎原利生 on 2025/04/24.
+//  Created by 崎原利生 on 2025/05/26.
 //
 
 import SwiftUI
 import FirebaseFirestore
 
-struct MemberAddView : View{
-    
+struct ChangeUserInfoView: View {
     @ObservedObject var group : GroupData
     
     @EnvironmentObject var Memberdata :  MemberList
-    @EnvironmentObject var listData : PayList
     
-    @State var newMember : ClubMember = ClubMember(name: "", grade: "" , paymentStatus:[])
+    @Binding var individual : ClubMember
     
     @Environment(\.dismiss) var dismiss
+    
     @State private var showAlert = false
     @State private var isDuplicate = false
     
@@ -26,29 +25,29 @@ struct MemberAddView : View{
             Form {
                 //名前読み取り
                 Section("名前") {
-                    TextField("Name", text: $newMember.name)
+                    TextField("Name", text: $individual.name)
                 }
                 //学年
                 Section("学年"){
-                    TextField("grade" , text: $newMember.grade)
+                    TextField("grade" , text: $individual.grade)
                 }
             }
         }
-        .onAppear{
-            newMember.paymentStatus = listData.paylistitem
-        }
+        
         
         .toolbar{
             ToolbarItem{
                 Button("完了"){
-                    if newMember.name.isEmpty {
+                    
+                    memberchange()
+                    
+                    if individual.name.isEmpty {
                         showAlert = true
                         isDuplicate = false
-                    } else if Memberdata.members.contains(where: { $0.name == newMember.name }) {
+                    } else if Memberdata.members.contains(where: { $0.name == individual.name && $0.id != individual.id }) {
                         isDuplicate = true
                         showAlert = true
                     } else {
-                        Memberdata.members.append(newMember)
                         memberfireadd()
                         dismiss()
                     }
@@ -57,9 +56,8 @@ struct MemberAddView : View{
                     if isDuplicate {
                         return Alert(
                             title: Text("確認"),
-                            message: Text("すでに登録されている名前です。追加しますか？"),
+                            message: Text("すでに登録されている名前です。変更しますか？"),
                             primaryButton: .default(Text("追加する")) {
-                                Memberdata.members.append(newMember)
                                 memberfireadd()
                                 dismiss()
                             },
@@ -78,7 +76,19 @@ struct MemberAddView : View{
         }
     }
     
+    func memberchange() {
+        if let index = Memberdata.members.firstIndex(where: { $0.id == individual.id }) {
+            Memberdata.members[index].name = individual.name
+            Memberdata.members[index].grade = individual.grade
+            Memberdata.members = Memberdata.members
+            print(Memberdata.members[index])
+            // 他のフィールドも必要なら更新
+            } else {
+                print("見つかりませんでした")
+            }
+    }
 
+    
     func memberfireadd() {
         let db = Firestore.firestore()
         // Groupドキュメントを取得
@@ -87,7 +97,7 @@ struct MemberAddView : View{
         let Mdata = Memberdata.members.map { $0.toDictionary() }
         
         docRef.updateData([
-                "MemberList": Mdata
+            "MemberList": Mdata
         ]) { error in
             if let error = error {
                 print("更新エラー: \(error.localizedDescription)")
@@ -96,8 +106,4 @@ struct MemberAddView : View{
             }
         }
     }
-    
 }
-        
-
-        

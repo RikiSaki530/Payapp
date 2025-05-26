@@ -7,7 +7,7 @@
 import SwiftUI
 
 
-struct ClubMember: Identifiable, Codable, Hashable {
+struct ClubMember: Identifiable, Codable, Hashable{
     var id: UUID = UUID()                // Firestore保存時に除外しても良い
     var name: String                     // 名前
     var grade: String                   // 学年

@@ -25,7 +25,7 @@ struct PayApp: App {
 
       var body: some Scene {
         WindowGroup {
-            OpneUIView()
+            RootView()
         }
       }
 }

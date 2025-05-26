@@ -18,12 +18,14 @@ struct PayListaddView: View {
     @EnvironmentObject var Memberdata :  MemberList
     //閉じる用
     @Environment(\.dismiss) var dismiss
+    //アラート用
+    @State private var showAlert = false
     
     
     var body: some View {
         VStack(){
             Form{
-                Section("支払い名義"){
+                Section("支払い内容"){
                     TextField("Name" , text: $newpayitem.name)
                 }
                 Section("金額"){
@@ -35,18 +37,23 @@ struct PayListaddView: View {
         .toolbar{
             ToolbarItem{
                 Button("完了"){
-                    if !newpayitem.name.isEmpty &&
-                        !paylist.paylistitem.contains(where: { $0.name == newpayitem.name }) {
+                    if newpayitem.name.isEmpty {
+                        showAlert = true
+                    } else if !paylist.paylistitem.contains(where: { $0.name == newpayitem.name }) {
                         paylist.paylistitem.append(newpayitem)
                         Memberdata.addPaymentitem(PaymentItem: newpayitem)
+                        paylistfireadd()
+                        memberfireadd()
+                        
                         dismiss()
                     }
                 }
+                .alert("エラー", isPresented: $showAlert) {
+                            Button("OK", role: .cancel) { }
+                } message: {
+                    Text("支払い内容が空欄です。入力してください。")
+                }
             }
-        }
-        .onDisappear{
-            paylistfireadd()
-            memberfireadd()
         }
     }
     
