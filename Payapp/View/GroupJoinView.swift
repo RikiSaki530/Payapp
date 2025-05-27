@@ -22,6 +22,9 @@ struct GroupJoinView: View {
     @State private var shouldNavigate = false
     @State private var groupCode : String = ""
     
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    
     
     
     
@@ -39,12 +42,27 @@ struct GroupJoinView: View {
                 Button("参加") {
                     // ボタンを押した時、isCodeValidがtrueの場合に処理を実行
                     if !groupCode.isEmpty {
-                        fetchGroupData() {
-                            print("グループデータの取得が完了しました")
-                            shouldNavigate = true
+                            checkGroupExists(code: groupCode) { exists in
+                                if exists {
+                                    fetchGroupData {
+                                        shouldNavigate = true
+                                    }
+                                } else {
+                                    alertMessage = "グループコードが間違っています。ご確認ください。"
+                                    showAlert = true
+                                }
+                            }
+                        } else {
+                            alertMessage = "コードを入力してください"
+                            showAlert = true
                         }
                     }
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("エラー"),
+                          message: Text(alertMessage),
+                          dismissButton: .default(Text("OK")))
                 }
+                
                 .frame(width: 300, height: 60)
                 .background(Color.green) // 入力が有効な場合は緑
                 .cornerRadius(15)
@@ -55,9 +73,6 @@ struct GroupJoinView: View {
                 ContentView(user:user , group: group)
                     .environmentObject(Memberdata)
                     .environmentObject(listData)
-            }
-            .onDisappear{
-                updateAccountMemberList()
             }
         }
     }
@@ -154,29 +169,34 @@ struct GroupJoinView: View {
             print(group.MemberList)
             print(group.PayList)
             
+            Memberdata.members = group.MemberList
+            listData.paylistitem = group.PayList
             
             DispatchQueue.main.async {
                 completion()
             }
         }
     }
+
     
-    func updateAccountMemberList() {
+    func checkGroupExists(code: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
-        let docRef = db.collection("Group").document(group.groupCode)
         
-        
-        docRef.updateData([
-            "AccountMemberList.\(user.name)": user.UserID
-        ]) { error in
+        db.collection("Group").document(code).getDocument { document, error in
             if let error = error {
-                print("AccountMemberListの更新失敗: \(error.localizedDescription)")
+                print("エラー: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            if let document = document, document.exists {
+                completion(true)
             } else {
-                print("AccountMemberListの更新成功")
+                completion(false)
             }
         }
     }
-    
+
     
 }
 

@@ -18,9 +18,6 @@ struct ContentView: View {
     @EnvironmentObject var listData : PayList
     @EnvironmentObject var Memberdata : MemberList
     
-    
-    
-    
     var body: some View {
         
         NavigationStack {
@@ -90,7 +87,6 @@ struct ContentView: View {
                         }
                     }
                 }
-
             }
         }
         
@@ -109,6 +105,7 @@ struct ContentView: View {
             fetchOnlyMemberAndPayList {
                 print("完了")
             }
+            updateAccountMemberList()
             
         }
     }
@@ -179,17 +176,31 @@ struct ContentView: View {
                     listData.paylistitem[index] = updatedPay  // ✅ 内容だけ更新
                 }
             }
-
-
+            
             print("更新できたよ")
             
-
             DispatchQueue.main.async {
                 completion()
             }
         }
     }
 
+    func updateAccountMemberList() {
+        let db = Firestore.firestore()
+        let docRef = db.collection("Group").document(group.groupCode)
+        
+        
+        docRef.updateData([
+            "AccountMemberList.\(user.name)": user.UserID
+        ]) { error in
+            if let error = error {
+                print("AccountMemberListの更新失敗: \(error.localizedDescription)")
+            } else {
+                print("AccountMemberListの更新成功")
+            }
+        }
+    }
+    
 }
     
 

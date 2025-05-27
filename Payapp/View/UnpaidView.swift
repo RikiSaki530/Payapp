@@ -23,7 +23,10 @@ struct UnpaidView: View {
             List {
                 // ForEachでunpaidListのアイテムを表示
                 ForEach($unpaidlist, id: \.self) { $item in
-                    Section(item) {
+                    Section(
+                        header: Text(item)
+                            .font(.title3)
+                    ) {
                         // unpaidMemberを使って未払いのメンバーを表示
                         UnpaidlistView(item: $item, user :user , group: group)
                     }
