@@ -5,6 +5,8 @@
 //  Created by 崎原利生 on 2025/05/13.
 //
 
+//ここもっと改善しないとダメだよ
+
 import SwiftUI
 
 struct HintView: View {

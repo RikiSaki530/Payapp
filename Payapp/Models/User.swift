@@ -51,6 +51,13 @@ class User: ObservableObject, Identifiable {
         }
     }
     
+    func reset() {
+        self.name = ""
+        self.Mailaddress = ""
+        self.admin = [:]
+        groupList = [:]
+        UserID = ""
+    }
     
 }
 

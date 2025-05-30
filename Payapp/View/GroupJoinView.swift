@@ -39,35 +39,37 @@ struct GroupJoinView: View {
                     .autocapitalization(.none)
                 
                 
-                Button("参加") {
+                Button{
                     // ボタンを押した時、isCodeValidがtrueの場合に処理を実行
                     if !groupCode.isEmpty {
-                            checkGroupExists(code: groupCode) { exists in
-                                if exists {
-                                    fetchGroupData {
-                                        shouldNavigate = true
-                                    }
-                                } else {
-                                    alertMessage = "グループコードが間違っています。ご確認ください。"
-                                    showAlert = true
+                        checkGroupExists(code: groupCode) { exists in
+                            if exists {
+                                fetchGroupData {
+                                    shouldNavigate = true
                                 }
+                            } else {
+                                alertMessage = "グループコードが間違っています。ご確認ください。"
+                                showAlert = true
                             }
-                        } else {
-                            alertMessage = "コードを入力してください"
-                            showAlert = true
                         }
+                    } else {
+                        alertMessage = "コードを入力してください"
+                        showAlert = true
                     }
+                } label: {
+                    Text("グループに参加")
+                    
+                        .foregroundColor(.black)
+                        .frame(width: 150 , height: 50)
+                        .background(Color.yellow)
+                        .cornerRadius(10)
+                }
+                
                 .alert(isPresented: $showAlert) {
                     Alert(title: Text("エラー"),
                           message: Text(alertMessage),
                           dismissButton: .default(Text("OK")))
                 }
-                
-                .frame(width: 300, height: 60)
-                .background(Color.green) // 入力が有効な場合は緑
-                .cornerRadius(15)
-                .foregroundColor(.black)
-                
             }
             .navigationDestination(isPresented: $shouldNavigate){
                 ContentView(user:user , group: group)

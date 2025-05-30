@@ -30,25 +30,32 @@ struct GroupListView: View {
             
             VStack(spacing: 20){
                 
-                Spacer()
-                    .frame(height : 25) // ← 幅を指定
+                    Spacer()
+                        .frame(height : 25) // ← 幅を指定
                 
-                NavigationLink("グループを作成") {
-                    GroupCreationView(user: existingUser)
+                HStack{
+                    NavigationLink(destination: GroupCreationView(user: existingUser)) {
+                        Text("グループを作成")
+                            .frame(width: 144, height: 60)
+                            .background(Color.green)
+                            .cornerRadius(15)
+                            .contentShape(Rectangle()) // ここに必ず付ける
+                            .foregroundColor(.black)
+                    }
+                    
+                    Spacer()
+                        .frame(width: 12)
+                    
+                    NavigationLink(destination: GroupJoinView(user: existingUser)){
+                        Text("グループに参加")
+                            .foregroundColor(.black) // ← テキストの色も明示
+                            .frame(width: 144 , height: 60)
+                            .background(Color.green)
+                            .cornerRadius(15)
+                            .contentShape(Rectangle())
+                    }
+                    
                 }
-                .foregroundColor(.black)
-                .frame(width: 300 , height: 60)
-                .background(Color.green)
-                .cornerRadius(15)
-                
-                NavigationLink("グループに参加"){
-                    GroupJoinView(user: existingUser )
-                }
-                .foregroundColor(.black) // ← テキストの色も明示
-                .frame(width: 300 , height: 60)
-                .background(Color.green)
-                .cornerRadius(15)
-                
                 
                 ForEach(Array(existingUser.groupList), id: \.key) { key, value in
                     Button {

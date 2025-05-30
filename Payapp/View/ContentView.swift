@@ -49,8 +49,10 @@ struct ContentView: View {
                         .environmentObject(Memberdata)
                 }
                 
-                Section("追加"){
-                    
+                Section(
+                    header: Text("追加")
+                        .font(.headline)
+                ) {
                     NavigationLink("メンバー追加"){
                         MemberAddView(group : group)
                             .navigationTitle("メンバー追加")
@@ -69,7 +71,7 @@ struct ContentView: View {
                 
                 Section{
                     NavigationLink("設定"){
-                        SettingView(user : user)
+                        SettingView(user : user , group: group)
                     }
                 }
                 
@@ -111,7 +113,7 @@ struct ContentView: View {
     }
     
 
-    
+    //他の要素も置き換えた方が良くない？
     func fetchOnlyMemberAndPayList(completion: @escaping () -> Void) {
         let db = Firestore.firestore()
         

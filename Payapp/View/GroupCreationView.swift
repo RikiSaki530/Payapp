@@ -38,18 +38,21 @@ struct GroupCreationView: View {
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
                 
-                Button("グループを作成") {
+                Button{
                     if groupname.isEmpty {
                         errorMessage = "名前を入力してください。"
                     }else{
                         CanMakeGroup()
                         shouldNavigate = true
                     }
+                } label: {
+                    Text("グループを作成")
+                    
+                        .foregroundColor(.black)
+                        .frame(width: 150 , height: 50)
+                        .background(Color.yellow)
+                        .cornerRadius(10)
                 }
-                .foregroundColor(.black)
-                .frame(width: 300 , height: 50)
-                .background(Color.yellow)
-                .cornerRadius(10)
                 
                 // エラーメッセージがあれば表示
                 if let errorMessage = errorMessage {

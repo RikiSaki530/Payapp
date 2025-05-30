@@ -11,10 +11,10 @@ import FirebaseAuth
 
 struct SingUpView: View {
     
-    @StateObject var newUser = User(name: "", Mailaddress: "",  admin: [:], groupList: [:], UserID: "")
+    @StateObject var newUser = User(name: "", Mailaddress: "", admin: [:], groupList: [:], UserID: "")
     @State private var isRegistered = false
     @State private var errorMessage = ""
-    @State private var password : String = ""
+    @State private var password: String = ""
     
     var body: some View {
         NavigationStack {
@@ -36,24 +36,24 @@ struct SingUpView: View {
                     register(
                         name: newUser.name,
                         email: newUser.Mailaddress,
-                        password: password
-        
-                    ) { createdUser in
-                        if let createdUser = createdUser {
-                            newUser.name = createdUser.name
-                            newUser.Mailaddress = createdUser.Mailaddress
-                            newUser.UserID = createdUser.UserID
-                            isRegistered = true
-                            
-                            UserDefaults.standard.set(newUser.UserID, forKey: "userID")
-                            UserDefaults.standard.set(newUser.Mailaddress, forKey: "userEmail")
-                            UserDefaults.standard.set(newUser.name, forKey: "userName")
-                            UserDefaults.standard.synchronize() // デバイスに保存
-                            
-                        } else {
-                            errorMessage = "登録に失敗しました"
+                        password: password,
+                        completion: { createdUser in
+                            if let createdUser = createdUser {
+                                newUser.name = createdUser.name
+                                newUser.Mailaddress = createdUser.Mailaddress
+                                newUser.UserID = createdUser.UserID
+                                isRegistered = true
+                                
+                                UserDefaults.standard.set(newUser.UserID, forKey: "userID")
+                                UserDefaults.standard.set(newUser.Mailaddress, forKey: "userEmail")
+                                UserDefaults.standard.set(newUser.name, forKey: "userName")
+                                UserDefaults.standard.synchronize()
+                            }
+                        },
+                        onError: { message in
+                            errorMessage = message
                         }
-                    }
+                    )
                 }
                 .foregroundColor(.black)
                 .frame(width: 75, height: 45)
@@ -63,26 +63,44 @@ struct SingUpView: View {
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .frame(width: 300)
                 }
             }
-            // ✅ VStack に navigationDestination を適用
             .navigationDestination(isPresented: $isRegistered) {
-                NameSettingView(newUser: newUser) // 新しいユーザーを渡す
+                NameSettingView(newUser: newUser)
             }
         }
     }
     
-    
-    func register(name: String, email: String, password: String, completion: @escaping (User?) -> Void) {
+    func register(
+        name: String,
+        email: String,
+        password: String,
+        completion: @escaping (User?) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            if let error = error {
-                print("登録失敗: \(error.localizedDescription)")
+            if let error = error as NSError? {
+                let message: String
+                switch AuthErrorCode(rawValue: error.code) {
+                case .emailAlreadyInUse:
+                    message = "このメールアドレスは既に使用されています。"
+                case .invalidEmail:
+                    message = "メールアドレスの形式が正しくありません。"
+                case .weakPassword:
+                    message = "パスワードは6文字以上にしてください。"
+                default:
+                    message = "登録に失敗しました: \(error.localizedDescription)"
+                }
+                print("エラー内容: \(message)")
+                onError(message)
                 completion(nil)
                 return
             }
             
             guard let authUser = authResult?.user else {
-                print("Firebaseユーザー情報が取得できませんでした。")
+                onError("Firebaseユーザー情報が取得できませんでした。")
                 completion(nil)
                 return
             }
@@ -98,5 +116,4 @@ struct SingUpView: View {
             completion(newUser)
         }
     }
-    
 }

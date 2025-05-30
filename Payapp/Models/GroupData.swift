@@ -32,29 +32,37 @@ class GroupData: Identifiable , ObservableObject {
     }
             
     func fireadd() {
-            let db = Firestore.firestore()
-            let changeRef = db.collection("Group").document(self.groupCode)
-
-            // GroupData のプロパティを辞書型に変換
-            let groupData: [String: Any] = [
-                "groupName": self.groupName,
-                "groupCode": self.groupCode,
-                "Leader": self.Leader,
-                "AccountMemberList": self.AccountMemberList,
-                "MemberList": self.MemberList, // ClubMember の配列を辞書に変換
-                "PayList": self.PayList // PayItem の配列を辞書に変換
-            ]
-            
-            // Firestore に保存または更新
+        let db = Firestore.firestore()
+        let changeRef = db.collection("Group").document(self.groupCode)
+        
+        // GroupData のプロパティを辞書型に変換
+        let groupData: [String: Any] = [
+            "groupName": self.groupName,
+            "groupCode": self.groupCode,
+            "Leader": self.Leader,
+            "AccountMemberList": self.AccountMemberList,
+            "MemberList": self.MemberList, // ClubMember の配列を辞書に変換
+            "PayList": self.PayList // PayItem の配列を辞書に変換
+        ]
+        
+        // Firestore に保存または更新
         changeRef.setData(groupData) { error in
             if let error = error {
-                    print("グループ情報更新エラー: \(error.localizedDescription)")
-                } else {
-                    print("グループ情報更新成功")
-                }
+                print("グループ情報更新エラー: \(error.localizedDescription)")
+            } else {
+                print("グループ情報更新成功")
             }
         }
+    }
     
+    func reset() {
+            groupName = ""
+            groupCode = ""
+            Leader = [:]
+            AccountMemberList = [:]
+            MemberList = []
+            PayList = []
+        }
 }
 
 

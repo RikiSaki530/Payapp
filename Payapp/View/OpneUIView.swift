@@ -11,29 +11,42 @@ import SwiftUI
 struct OpneUIView: View {
     var body: some View {
         NavigationStack {
-            VStack(spacing: 50) {
+            VStack {
                 Text("会計app")
                     .font(.largeTitle)
-
-                NavigationLink("新規登録") {
-                    SingUpView()
+                
+                Spacer()
+                    .frame(height : 64)
+                    
+                NavigationLink(destination: SingUpView()) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.yellow)
+                            .frame(width: 200, height: 60)
+                        
+                        Text("新規登録")
+                            .foregroundColor(.black)
+                            .font(.title2)
+                    }
                 }
-                .frame(width: 300, height: 60)
-                .background(Color.yellow)
-                .foregroundColor(.black)
-                .cornerRadius(10)
-                .font(.title2)
-
-                NavigationLink("ログイン") {
-                    LoginView()
+                
+                Spacer()
+                    .frame(height: 32)
+                
+                NavigationLink(destination: LoginView()) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.yellow)
+                            .frame(width: 200, height: 60)
+                        
+                        Text("ログイン")
+                            .foregroundColor(.black)
+                            .font(.title2)
+                    }
                 }
-                .frame(width: 300, height: 60)
-                .background(Color.yellow)
-                .foregroundColor(.black)
-                .cornerRadius(10)
-                .font(.title2)
+                
+                .padding()
             }
-            .padding()
         }
     }
 }

@@ -21,7 +21,7 @@ struct NameSettingView: View {
             
             VStack(spacing: 30){
                 
-                TextField("名前を入力" , text: $newUser.name)
+                TextField("ユーザー名を入力" , text: $newUser.name)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)

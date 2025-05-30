@@ -40,7 +40,7 @@ struct IndividualView : View{
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink("編集") {
                         ChangeUserInfoView(group: group , individual : $individual )
-                            .environmentObject(Memberdata) // 必要なら渡す
+                            .environmentObject(Memberdata) 
                     }
                 }
             }

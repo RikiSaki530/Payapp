@@ -31,7 +31,7 @@ struct LoginView: View {
                     .keyboardType(.emailAddress)
                     .disableAutocorrection(true)
                 
-                TextField("パスワード" , text: $password)
+                SecureField("パスワード" , text: $password)
                     .frame(width: 300)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
@@ -39,6 +39,7 @@ struct LoginView: View {
                 Button("ログイン") {
                     login(email: ExistingUser.Mailaddress, password: password) { user in
                         if let user = user {
+                            print(user.UserID)
                             self.loginSuccess = true
                             
                             // ✅ @StateObject の ExistingUser に代入
