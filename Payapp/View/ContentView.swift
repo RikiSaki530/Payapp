@@ -18,77 +18,158 @@ struct ContentView: View {
     @EnvironmentObject var listData : PayList
     @EnvironmentObject var Memberdata : MemberList
     
+    @Binding var path: NavigationPath
+    
     var body: some View {
         
-        NavigationStack {
+        ZStack{
+            Color.gray.opacity(0.13)  // 好きな色
+                    .ignoresSafeArea() // 画面の安全領域も無視して全面に表示
+
             
-            Text(group.groupName)
-                .font(.largeTitle)
-            
-            List {
+            VStack(spacing: 20){
+                
+                Text(group.groupName)
+                    .font(.largeTitle)
+                    .frame(height: 50)
+                
                 // 名前から誰が何を払ったかがわかるようにする
-                NavigationLink("メンバー") {
-                    MemberView(user: user , group: group) // MemberViewへデータを渡す
-                        .navigationTitle("メンバー")
-                        .environmentObject(Memberdata) // MemberListデータを渡す
-                        .environmentObject(listData) // PayListデータを渡す
-                }
-                //支払いするものについて誰が払った払ってないをlist化
-                NavigationLink("払うものリスト"){
-                    MastPayView(user: user , group: group)
-                        .navigationTitle("払うもののリスト")
-                        .environmentObject(listData)
-                        .environmentObject(Memberdata)
-                    
-                }
-                //未払いのみをピックアップして誰が何を払っていないのかを把握
-                NavigationLink("未払いリスト"){
-                    UnpaidView(user: user , group: group)
-                        .navigationTitle("未払いリスト")
-                        .environmentObject(listData)
-                        .environmentObject(Memberdata)
+                NavigationLink(value:Destination.Member(user: user, group: group)) {
+                    Text("メンバー")
+                        .foregroundColor(.black)
+                        .frame(width: 300, height: 60)
+                        .background(Color.white)
+                        .cornerRadius(15)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(Color.cyan, lineWidth: 4)  // ここで黒い枠をつける
+                        )
+                        .contentShape(Rectangle())
                 }
                 
-                Section(
-                    header: Text("追加")
-                        .font(.headline)
-                ) {
-                    NavigationLink("メンバー追加"){
-                        MemberAddView(group : group)
-                            .navigationTitle("メンバー追加")
-                            .environmentObject(Memberdata)
-                            .environmentObject(listData)
+                Text("お金のかんり")
+                    .font(.title2)
+                
+                HStack{
+                    //支払いするものについて誰が払った払ってないをlist化
+                    NavigationLink(value : Destination.MastPay(user: user, group: group)){
+                        Text("払うものリスト")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.orange, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
+                        
                     }
                     
-                    NavigationLink("払うもの追加"){
-                        PayListaddView(group : group)
-                            .navigationTitle("払うもの追加")
-                            .environmentObject(listData)
-                            .environmentObject(Memberdata)
+                    Spacer()
+                        .frame(width: 50)
+                    
+                    //未払いのみをピックアップして誰が何を払っていないのかを把握
+                    NavigationLink(value:Destination.Unpaid(user: user, group: group)){
+                        Text("未払いリスト")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height:60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.orange, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
+                    }
+                }
+                
+                Text("追加")
+                    .font(.title2)
+                
+                HStack{
+                    NavigationLink(value:Destination.MemberAdd(group: group)){
+                        Text("メンバー追加")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.yellow, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
                     }
                     
-                }
-                
-                Section{
-                    NavigationLink("設定"){
-                        SettingView(user : user , group: group)
+                    Spacer()
+                        .frame(width: 50)
+                    
+                    NavigationLink(value:Destination.PayListAdd(group: group)){
+                        Text("払うもの追加")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.yellow, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
                     }
                 }
                 
-                Section{
-                    NavigationLink("使い方"){
-                        HintView()
+                Text("オプション")
+                    .font(.title2)
+                
+                HStack{
+                    NavigationLink(value: Destination.Setting(user: user, group: group)) {
+                        Text("設定")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.mint, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
+                    }
+                    
+                    Spacer()
+                        .frame(width: 50)
+                    
+                    NavigationLink(value:Destination.Hint){
+                        Text("使い方")
+                            .foregroundColor(.black)
+                            .frame(width: 125, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.mint, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
                     }
                 }
+                
                 
                 //ここで管理者もしくはリーダーかを判断して権限追加する
                 if user.admin[group.groupCode] == true || user.UserID == group.Leader[user.name]{
-                    Section("管理用") {
-                        NavigationLink("管理者を追加") {
-                            AddminView(user: user, group: group)
-                        }
+                    
+                    NavigationLink(value : Destination.Addmin(user: user, group: group)) {
+                        Text("管理者を設定")
+                            .foregroundColor(.black)
+                            .frame(width: 300, height: 60)
+                            .background(Color.white)
+                            .cornerRadius(15)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.gray, lineWidth: 4)  // ここで黒い枠をつける
+                            )
+                            .contentShape(Rectangle())
                     }
                 }
+                Spacer()
             }
         }
         

@@ -30,87 +30,83 @@ struct AccountDeleteView: View {
     @State private var password : String = ""
     @State private var reauthErrorMessage: String = ""
     
+    @Binding var path: NavigationPath
+    
     
     var body: some View {
-        
-        NavigationStack{
-            VStack{
-                
-                //ここ,デザイン考えて
-                Text("アカウントを完全に削除します")
-                    .foregroundColor(.red)
-                    .font(.title2)
-                Text("削除後は元に戻せません。")
-                    .foregroundColor(.red)
-                    .font(.title3)
-                Text("本当によろしいですか？")
-                    .foregroundColor(.red)
-                    .font(.title3)
-                
-                Spacer()
-                    .frame(height : 40)
-                
-                SecureField("パスワードを入力" , text: $password)
-                    .frame(width: 300)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.none)
-                
-                
-                Button("OK") {
-                    if password.isEmpty {
-                        reauthErrorMessage = "パスワードを入力してください。"
-                    } else {
-                        showConfirmAlert = true
-                        reauthErrorMessage = ""  // エラーメッセージをクリア
-                    }
-                }
-                .padding()
-                .background(Color.yellow)
-                .cornerRadius(10)
-                .foregroundColor(.black)
-                .alert("本当に削除しますか？", isPresented: $showConfirmAlert) {
-                    Button("キャンセル", role: .cancel) { }
-                    Button("削除", role: .destructive) {
-                        acountDelete(password: password) { }
-                    }
-                }
-                
-                
-                Group {
-                    if !deleteAlertMessage.isEmpty {
-                        VStack(spacing: 4) {
-                            Text(deleteAlertMessage)
-                            
-                            Spacer()
-                                .frame(height: 32)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                ForEach(cannotdeletegroup.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                                    Text(key)
-                                }
-
-                                .padding(.horizontal)  // 好みで調整可
-                            }
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                        }
-                    } else if !reauthErrorMessage.isEmpty {
-                        Text(reauthErrorMessage)
-                            .foregroundColor(.red)
-                    } else {
-                        // どちらも空なら高さを保つ透明なスペース
-                        Text(" ")
-                            .frame(height: 20)
-                            .opacity(0)
-                    }
+        VStack{
+            
+            //ここ,デザイン考えて
+            Text("アカウントを完全に削除します")
+                .foregroundColor(.red)
+                .font(.title2)
+            Text("削除後は元に戻せません。")
+                .foregroundColor(.red)
+                .font(.title3)
+            Text("本当によろしいですか？")
+                .foregroundColor(.red)
+                .font(.title3)
+            
+            Spacer()
+                .frame(height : 40)
+            
+            SecureField("パスワードを入力" , text: $password)
+                .frame(width: 300)
+                .textFieldStyle(.roundedBorder)
+                .autocapitalization(.none)
+            
+            
+            Button("OK") {
+                if password.isEmpty {
+                    reauthErrorMessage = "パスワードを入力してください。"
+                } else {
+                    showConfirmAlert = true
+                    reauthErrorMessage = ""  // エラーメッセージをクリア
                 }
             }
-        }
-        .navigationDestination(isPresented: $shouldloginView){
-            OpneUIView()
+            .padding()
+            .background(Color.yellow)
+            .cornerRadius(10)
+            .foregroundColor(.black)
+            .alert("本当に削除しますか？", isPresented: $showConfirmAlert) {
+                Button("キャンセル", role: .cancel) { }
+                Button("削除", role: .destructive) {
+                    acountDelete(password: password) { }
+                }
+            }
+            
+            
+            Group {
+                if !deleteAlertMessage.isEmpty {
+                    VStack(spacing: 4) {
+                        Text(deleteAlertMessage)
+                        
+                        Spacer()
+                            .frame(height: 32)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(cannotdeletegroup.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                                Text(key)
+                            }
+                            
+                            .padding(.horizontal)  // 好みで調整可
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.gray, lineWidth: 1)
+                        )
+                    }
+                } else if !reauthErrorMessage.isEmpty {
+                    Text(reauthErrorMessage)
+                        .foregroundColor(.red)
+                } else {
+                    // どちらも空なら高さを保つ透明なスペース
+                    Text(" ")
+                        .frame(height: 20)
+                        .opacity(0)
+                }
+            }
         }
     }
     
@@ -158,7 +154,7 @@ struct AccountDeleteView: View {
                         if success {
                             print("アカウントが正常に削除されました")
                             logout()
-                            shouldloginView = true
+                            path = NavigationPath()
                         } else {
                             print("再認証または削除に失敗しました")
                         }

@@ -12,80 +12,75 @@ import Firebase
 struct GroupListView: View {
     
     @ObservedObject var existingUser :User
-    @StateObject var group = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
+    @StateObject var group = GroupData(groupName: "", groupCode: "", Status: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
     
-    @StateObject var Memberdata = MemberList() // ClubMembersデータ
-    @StateObject var listData = PayList() // PayListデータ
+    @EnvironmentObject var listData : PayList
+    @EnvironmentObject var Memberdata : MemberList
     
     @State private var selectedGroup: GroupData? = nil
     @State private var selectedGroupCode: String? = nil
     @State private var isActive = false
     
-    
+    @Binding var path: NavigationPath
     
     
     var body: some View {
         
-        NavigationStack{
+        VStack(spacing: 20){
             
-            VStack(spacing: 20){
-                
-                    Spacer()
-                        .frame(height : 25) // ← 幅を指定
-                
-                HStack{
-                    NavigationLink(destination: GroupCreationView(user: existingUser)) {
-                        Text("グループを作成")
-                            .frame(width: 144, height: 60)
-                            .background(Color.green)
-                            .cornerRadius(15)
-                            .contentShape(Rectangle()) // ここに必ず付ける
-                            .foregroundColor(.black)
-                    }
-                    
-                    Spacer()
-                        .frame(width: 12)
-                    
-                    NavigationLink(destination: GroupJoinView(user: existingUser)){
-                        Text("グループに参加")
-                            .foregroundColor(.black) // ← テキストの色も明示
-                            .frame(width: 144 , height: 60)
-                            .background(Color.green)
-                            .cornerRadius(15)
-                            .contentShape(Rectangle())
-                    }
-                    
-                }
-                
-                ForEach(Array(existingUser.groupList), id: \.key) { key, value in
-                    Button {
-                        print(value)
-                        if !value.isEmpty {
-                            selectedGroupCode = value
-                            fetchGroupData(groupcode: value , group: group){
-                                isActive = true
-                            }
-                        } else {
-                            print("⚠️ groupCode が空です")
-                        }
-                    } label: {
-                        Text(key)
-                            .foregroundColor(.black)
-                            .frame(width: 300, height: 60)
-                            .background(Color.yellow)
-                            .cornerRadius(15)
-                    }
+            Spacer()
+                .frame(height : 25) // ← 幅を指定
+            
+            HStack{
+                NavigationLink(value: Destination.GroupCreateaion(User: existingUser)) {
+                    Text("グループ作成")
+                        .frame(width: 144, height: 60)
+                        .background(Color.green)
+                        .cornerRadius(15)
+                        .contentShape(Rectangle()) // ここに必ず付ける
+                        .foregroundColor(.black)
                 }
                 
                 Spacer()
+                    .frame(width: 12)
+                
+                NavigationLink(value: Destination.GroupJoin(User: existingUser)){
+                    Text("グループに参加")
+                        .foregroundColor(.black) // ← テキストの色も明示
+                        .frame(width: 144 , height: 60)
+                        .background(Color.green)
+                        .cornerRadius(15)
+                        .contentShape(Rectangle())
+                }
+                
             }
             
-            .navigationDestination(isPresented: $isActive) {
-                ContentView(user: existingUser, group: group )
-                    .environmentObject(listData)
-                    .environmentObject(Memberdata)
+            ForEach(Array(existingUser.groupList), id: \.key) { key, value in
+                Button {
+                    print(value)
+                    if !value.isEmpty {
+                        selectedGroupCode = value
+                        fetchGroupData(groupcode: value , group: group){
+                            isActive = true
+                            path.append(Destination.Content(user: existingUser, group: group))
+                            //environmentObject問題
+                        }
+                    } else {
+                        print("⚠️ groupCode が空です")
+                    }
+                } label: {
+                    Text(key)
+                        .foregroundColor(.black)
+                        .frame(width: 300, height: 60)
+                        .background(Color.yellow)
+                        .cornerRadius(15)
+                        .contentShape(Rectangle())
+                }
             }
+            
+            Spacer()
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     // Firestoreからグループデータを取得してstateのgroupに上書きする
@@ -113,6 +108,7 @@ struct GroupListView: View {
             group.groupCode = data["groupCode"] as? String ?? ""
             group.Leader = data["Leader"] as? [String: String] ?? [:]
             group.AccountMemberList = data["AccountMemberList"] as? [String: String] ?? [:]
+            group.Status = data["Status"] as? String ?? ""
             
             // メンバーリストのデコード
             if let memberArray = data["MemberList"] as? [[String: Any]] {

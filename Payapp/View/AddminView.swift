@@ -13,6 +13,8 @@ struct AddminView: View {
     @ObservedObject var user: User
     @ObservedObject var group: GroupData
     
+    @Binding var path: NavigationPath
+    
     var body: some View {
         let members = group.AccountMemberList
             .sorted(by: { $0.key < $1.key })

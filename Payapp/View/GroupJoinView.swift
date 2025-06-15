@@ -14,10 +14,10 @@ import FirebaseAuth
 struct GroupJoinView: View {
     
     @ObservedObject var user : User
-    @State var group = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
+    @State var group = GroupData(groupName: "", groupCode: "", Status: "" , Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
     
-    @StateObject var Memberdata = MemberList() // ClubMembersデータ
-    @StateObject var listData = PayList() // PayListデータ
+    @EnvironmentObject var listData: PayList
+    @EnvironmentObject var Memberdata: MemberList
     
     @State private var shouldNavigate = false
     @State private var groupCode : String = ""
@@ -25,58 +25,51 @@ struct GroupJoinView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     
-    
+    @Binding var path: NavigationPath
     
     
     var body: some View {
-        NavigationStack{
+        
+        VStack(spacing : 30){
             
-            VStack(spacing : 30){
-                
-                TextField("グループの参加コード", text: $groupCode)
-                    .frame(width: 300)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.none)
-                
-                
-                Button{
-                    // ボタンを押した時、isCodeValidがtrueの場合に処理を実行
-                    if !groupCode.isEmpty {
-                        checkGroupExists(code: groupCode) { exists in
-                            if exists {
-                                fetchGroupData {
-                                    shouldNavigate = true
-                                }
-                            } else {
-                                alertMessage = "グループコードが間違っています。ご確認ください。"
-                                showAlert = true
-                            }
+            TextField("グループの参加コード", text: $groupCode)
+                .frame(width: 300)
+                .textFieldStyle(.roundedBorder)
+                .autocapitalization(.none)
+            
+            
+            Button{
+                // ボタンを押した時、isCodeValidがtrueの場合に処理を実行
+                if !groupCode.isEmpty {
+                    checkGroupExists(code: groupCode) { exists in
+                        if exists {
+                            fetchGroupData {
+                                path.append(Destination.Content(user: user, group: group))                                }
+                        } else {
+                            alertMessage = "グループコードが間違っています。ご確認ください。"
+                            showAlert = true
                         }
-                    } else {
-                        alertMessage = "コードを入力してください"
-                        showAlert = true
                     }
-                } label: {
-                    Text("グループに参加")
-                    
-                        .foregroundColor(.black)
-                        .frame(width: 150 , height: 50)
-                        .background(Color.yellow)
-                        .cornerRadius(10)
+                } else {
+                    alertMessage = "コードを入力してください"
+                    showAlert = true
                 }
+            } label: {
+                Text("グループに参加")
                 
-                .alert(isPresented: $showAlert) {
-                    Alert(title: Text("エラー"),
-                          message: Text(alertMessage),
-                          dismissButton: .default(Text("OK")))
-                }
+                    .foregroundColor(.black)
+                    .frame(width: 150 , height: 50)
+                    .background(Color.yellow)
+                    .cornerRadius(10)
             }
-            .navigationDestination(isPresented: $shouldNavigate){
-                ContentView(user:user , group: group)
-                    .environmentObject(Memberdata)
-                    .environmentObject(listData)
+            
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("エラー"),
+                      message: Text(alertMessage),
+                      dismissButton: .default(Text("OK")))
             }
         }
+        
     }
     
     
@@ -106,6 +99,7 @@ struct GroupJoinView: View {
             group.groupCode = data["groupCode"] as? String ?? ""
             group.Leader = data["Leader"] as? [String: String] ?? [:]
             group.AccountMemberList = data["AccountMemberList"] as? [String: String] ?? [:]
+            group.Status = data["Status"] as? String ?? ""
             
             // メンバーリストのデコード
             if let memberArray = data["MemberList"] as? [[String: Any]] {

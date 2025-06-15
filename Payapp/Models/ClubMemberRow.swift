@@ -18,7 +18,7 @@ struct ClubMemberRow : View{
             Spacer()
             
             if !member.grade.isEmpty{
-                Text("\(member.grade)年")
+                Text(member.grade)
                     .font(.title2)
             }
         }

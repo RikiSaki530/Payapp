@@ -10,6 +10,9 @@
 import SwiftUI
 
 struct HintView: View {
+    
+    @Binding var path: NavigationPath
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {

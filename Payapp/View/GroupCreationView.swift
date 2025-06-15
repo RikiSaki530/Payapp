@@ -15,61 +15,52 @@ struct GroupCreationView: View {
     
     @ObservedObject var user : User
     
-    @State var newgroup = GroupData(groupName: "", groupCode: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
+    @State var newgroup = GroupData(groupName: "", groupCode: "", Status: "", Leader: [:], AccountMemberList: [:] , MemberList: [] , PayList: [])
     
     @State private var groupname = ""
     
     @State private var shouldNavigate = false
     @State private var errorMessage: String?   // エラーメッセージ用
     
-    @StateObject var Memberdata = MemberList()
-    @StateObject var listData = PayList() // PayListデータ
+    @EnvironmentObject var listData: PayList
+    @EnvironmentObject var Memberdata: MemberList
     
-    
+    @Binding var path: NavigationPath
     
     var body: some View {
         
-        NavigationStack{
+        VStack(spacing : 30){
             
-            VStack(spacing : 30){
-                
-                TextField("グループ名" , text: $groupname)
-                    .frame(width: 300)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.none)
-                
-                Button{
-                    if groupname.isEmpty {
-                        errorMessage = "名前を入力してください。"
-                    }else{
-                        CanMakeGroup()
-                        shouldNavigate = true
-                    }
-                } label: {
-                    Text("グループを作成")
-                    
-                        .foregroundColor(.black)
-                        .frame(width: 150 , height: 50)
-                        .background(Color.yellow)
-                        .cornerRadius(10)
+            TextField("グループ名" , text: $groupname)
+                .frame(width: 300)
+                .textFieldStyle(.roundedBorder)
+                .autocapitalization(.none)
+            
+            
+            Button{
+                if groupname.isEmpty {
+                    errorMessage = "名前を入力してください。"
+                }else{
+                    CanMakeGroup()
+                    path.append(Destination.Content(user: user, group: newgroup))
                 }
+            } label: {
+                Text("グループを作成")
                 
-                // エラーメッセージがあれば表示
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding(.top, 10)
-                }
-                
-                
+                    .foregroundColor(.black)
+                    .frame(width: 150 , height: 50)
+                    .background(Color.yellow)
+                    .cornerRadius(10)
+            }
+            
+            // エラーメッセージがあれば表示
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .padding(.top, 10)
             }
             
             
-            .navigationDestination(isPresented: $shouldNavigate) {
-                ContentView(user: user, group: newgroup )
-                    .environmentObject(Memberdata)
-                    .environmentObject(listData)
-            }
         }
     }
     
@@ -82,7 +73,6 @@ struct GroupCreationView: View {
         
         newgroup.groupCode = docRef.documentID
         newgroup.groupName = groupname
-        
         // グループ名が空かチェック
         if newgroup.groupName.isEmpty {
             print("❌ グループ名が空です！")

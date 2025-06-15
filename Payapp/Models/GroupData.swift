@@ -9,22 +9,25 @@ import SwiftUI
 import FirebaseFirestore
 
 
-class GroupData: Identifiable , ObservableObject {
+class GroupData: Identifiable , ObservableObject ,Hashable {
     
     @Published var groupName: String
     @Published var groupCode : String
     @Published var Leader : [String : String]
     @Published var AccountMemberList : [String : String] //アカウントのメンバー
+    @Published var Status : String
     
     @Published var MemberList : [ClubMember] = []
     @Published var PayList : [PayItem] = []
     
+    
     @DocumentID var id: String?
     
-    init(groupName: String, groupCode: String = "", Leader: [String : String], AccountMemberList: [String : String] ,
+    init(groupName: String, groupCode: String = "", Status : String ,Leader: [String : String], AccountMemberList: [String : String] ,
          MemberList :[ClubMember] , PayList:[PayItem]) {
         self.groupName = groupName
         self.groupCode = groupCode
+        self.Status = Status
         self.Leader = Leader
         self.AccountMemberList = AccountMemberList
         self.MemberList = MemberList
@@ -40,6 +43,7 @@ class GroupData: Identifiable , ObservableObject {
             "groupName": self.groupName,
             "groupCode": self.groupCode,
             "Leader": self.Leader,
+            "Status": self.Status,
             "AccountMemberList": self.AccountMemberList,
             "MemberList": self.MemberList, // ClubMember の配列を辞書に変換
             "PayList": self.PayList // PayItem の配列を辞書に変換
@@ -56,12 +60,22 @@ class GroupData: Identifiable , ObservableObject {
     }
     
     func reset() {
-            groupName = ""
-            groupCode = ""
-            Leader = [:]
-            AccountMemberList = [:]
-            MemberList = []
-            PayList = []
+        groupName = ""
+        groupCode = ""
+        Leader = [:]
+        AccountMemberList = [:]
+        MemberList = []
+        PayList = []
+    }
+    
+    // MARK: - Equatable
+        static func == (lhs: GroupData, rhs: GroupData) -> Bool {
+            return lhs.groupCode == rhs.groupCode
+        }
+
+        // MARK: - Hashable
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(groupCode)
         }
 }
 

@@ -17,6 +17,8 @@ struct MemberAddView : View{
     
     @State var newMember : ClubMember = ClubMember(name: "", grade: "" , paymentStatus:[])
     
+    @Binding var path: NavigationPath
+    
     @Environment(\.dismiss) var dismiss
     @State private var showAlert = false
     @State private var isDuplicate = false
@@ -29,8 +31,13 @@ struct MemberAddView : View{
                     TextField("Name", text: $newMember.name)
                 }
                 //学年
-                Section("学年"){
-                    TextField("grade" , text: $newMember.grade)
+                Section(
+                    header: Text(group.Status.isEmpty ? "学年・所属ステータス" : "\(group.Status)"),
+                    footer: Text(group.Status.isEmpty ? "学年・所属ステータスは空欄でも大丈夫です。" : "\(group.Status)は空欄でも大丈夫です。")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                ) {
+                    TextField("例：1年、卒業生など", text: $newMember.grade)
                 }
             }
         }

@@ -12,7 +12,7 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
-class User: ObservableObject, Identifiable {
+class User: ObservableObject, Identifiable , Hashable{
     
     @Published var name: String
     @Published var Mailaddress: String
@@ -57,6 +57,17 @@ class User: ObservableObject, Identifiable {
         self.admin = [:]
         groupList = [:]
         UserID = ""
+    }
+    
+    //ハッシュ化
+    // MARK: - Equatable
+        static func == (lhs: User, rhs: User) -> Bool {
+            return lhs.UserID == rhs.UserID
+        }
+
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(UserID)
     }
     
 }

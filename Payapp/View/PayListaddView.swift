@@ -13,6 +13,9 @@ struct PayListaddView: View {
     @ObservedObject var group : GroupData
     //新規作成用
     @State var newpayitem = PayItem(name: "", price: nil, paystatus: "➖")
+    
+    @Binding var path: NavigationPath
+    
     //PayList
     @EnvironmentObject var paylist : PayList
     @EnvironmentObject var Memberdata :  MemberList

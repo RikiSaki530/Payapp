@@ -26,56 +26,53 @@ struct SettingView: View {
     @State private var delteAlert = false
     @State private var deleteAlertMessage : String = ""
     
+    @Binding var path: NavigationPath
     
     var body: some View {
         
-        NavigationStack{
-            List{
-                
-                if user.UserID == group.Leader[user.name]{
-                    Section{
-                        NavigationLink("リーダーを変更"){
-                            LeadechangeView(user : user , group : group)
-                        }
+        List{
+            
+            if user.UserID == group.Leader[user.name]{
+                Section{
+                    NavigationLink("リーダーを変更"){
+                        LeadechangeView(user : user , group : group)
                     }
                 }
-                
-                NavigationLink("グループリストに戻る"){
-                    GroupListView(existingUser : user)
-                }
-                
-                NavigationLink("アカウント削除"){
-                    AccountDeleteView(user : user , group : group)
-                }
-                
-                Button("グループから抜ける") {
-                    showConfirmation = true // ✅ 確認アラートを表示
-                }
-                .foregroundColor(.red)
-                .alert("本当にグループから抜けますか？", isPresented: $showConfirmation) {
-                    Button("キャンセル", role: .cancel) {}
-                    Button("OK", role: .destructive) {
-                        GroupLogout {
-                            shouldNavigate = true
-                        }
-                    }
-                }
-        
-                Button("ログアウト") {
-                    logout()
-                    shouldNavigate2 = true
-                }
-                .foregroundColor(.red)
             }
+            
+            Button {
+                path = NavigationPath()  // まずスタックを空にリセット
+            } label: {
+                Text("グループリストに戻る")
+            }
+            
+            NavigationLink(value : Destination.StatusChange(group:group)){
+                Text("所属ステータスを設定")
+            }
+            
+            NavigationLink(value : Destination.Accoutndelete(user: user, group: group)){
+                Text("アカウント削除")
+            }
+            
+            Button("グループから抜ける") {
+                showConfirmation = true // ✅ 確認アラートを表示
+            }
+            .foregroundColor(.red)
+            .alert("本当にグループから抜けますか？", isPresented: $showConfirmation) {
+                Button("キャンセル", role: .cancel) {}
+                Button("OK", role: .destructive) {
+                    GroupLogout {
+                        path = NavigationPath()
+                    }
+                }
+            }
+            
+            Button("ログアウト") {
+                logout()
+                path = NavigationPath()
+            }
+            .foregroundColor(.red)
         }
-        .navigationDestination(isPresented: $shouldNavigate) {
-            GroupListView(existingUser: user)
-        }
-        
-        .navigationDestination(isPresented: $shouldNavigate2){
-            OpneUIView()
-        }
-
     }
     
     
@@ -102,8 +99,16 @@ struct SettingView: View {
         group.AccountMemberList.removeValue(forKey: user.name)
         
         updateAccountMemberList {
-            updateGroupList {
-                completion() // ✅ Firestoreの両方の更新が完了してから呼ぶ
+            if group.AccountMemberList.isEmpty {
+                deletegroup {
+                    updateGroupList {
+                        completion()
+                    }
+                }
+            }else{
+                updateGroupList {
+                    completion() // ✅ Firestoreの両方の更新が完了してから呼ぶ
+                }
             }
         }
     }
@@ -144,6 +149,18 @@ struct SettingView: View {
         completion()
     }
     
+    func deletegroup(completion: @escaping () -> Void) {
+        let db = Firestore.firestore()
+        db.collection("Group").document(group.groupCode).delete { error in
+            if let error = error {
+                print("Firestoreのグループ削除失敗: \(error.localizedDescription)")
+            } else {
+                print("Firestoreのグループ削除成功")
+            }
+            // 削除処理が終わってから completion を呼ぶ
+            completion()
+        }
+    }
 }
 
 

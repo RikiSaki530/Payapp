@@ -13,31 +13,31 @@ struct UnpaidView: View {
     @ObservedObject var user : User
     @ObservedObject var group : GroupData
     
+    @Binding var path: NavigationPath
+    
     @EnvironmentObject var Memberdata: MemberList
     @EnvironmentObject var listData: PayList
     @State var unpaidlist: [String] = []
     
     var body: some View {
         
-        NavigationStack {
-            List {
-                // ForEachでunpaidListのアイテムを表示
-                ForEach($unpaidlist, id: \.self) { $item in
-                    Section(
-                        header: Text(item)
-                            .font(.title3)
-                    ) {
-                        // unpaidMemberを使って未払いのメンバーを表示
-                        UnpaidlistView(item: $item, user :user , group: group)
-                    }
+        List {
+            // ForEachでunpaidListのアイテムを表示
+            ForEach($unpaidlist, id: \.self) { $item in
+                Section(
+                    header: Text(item)
+                        .font(.title3)
+                ) {
+                    // unpaidMemberを使って未払いのメンバーを表示
+                    UnpaidlistView(item: $item, user :user , group: group)
                 }
             }
-            .onAppear {
-                fetchOnlyMemberAndPayList {
-                    unpaidList()  // `unpaidList`を初期化する
-                    print("データ復旧")
-
-                }
+        }
+        .onAppear {
+            fetchOnlyMemberAndPayList {
+                unpaidList()  // `unpaidList`を初期化する
+                print("データ復旧")
+                
             }
         }
     }

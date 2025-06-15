@@ -17,31 +17,34 @@ struct IndividualView : View{
     @EnvironmentObject var Memberdata: MemberList // 親ビューから渡されたデータ
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("名前 : " + individual.name)
-                    .font(.title)
-                
-                if !individual.grade.isEmpty {
+        VStack {
+            Text("名前 : " + individual.name)
+                .font(.title)
+            
+            if !individual.grade.isEmpty {
+                if !group.Status.isEmpty {
+                    Text(group.Status + " : " + individual.grade)
+                        .font(.title)
+                }else{
                     Text("学年 : " + individual.grade)
                         .font(.title)
                 }
-                
-                PaylistView(user: user, group: group, member: $individual)
-                    .environmentObject(Memberdata)
             }
-            .onAppear {
-                fetchOnlyMemberAndPayList {
-                    print("復元")
-                }
-                print(individual.name)
+            
+            PaylistView(user: user, group: group, member: $individual)
+                .environmentObject(Memberdata)
+        }
+        .onAppear {
+            fetchOnlyMemberAndPayList {
+                print("復元")
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink("編集") {
-                        ChangeUserInfoView(group: group , individual : $individual )
-                            .environmentObject(Memberdata) 
-                    }
+            print(individual.name)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink("編集") {
+                    ChangeUserInfoView(group: group , individual : $individual )
+                        .environmentObject(Memberdata)
                 }
             }
         }

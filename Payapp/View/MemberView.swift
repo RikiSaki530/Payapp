@@ -19,6 +19,7 @@ struct MemberView: View {
     
     @EnvironmentObject var Memberdata: MemberList // 親ビューから渡されたデータ
     @EnvironmentObject var listData: PayList // 親ビューから渡されたデータ
+    @Binding var path: NavigationPath
     
     @State private var selectedIndex: Int? = nil  // 選択された行のIndexを保持
     
@@ -38,10 +39,8 @@ struct MemberView: View {
         }
         .toolbar {
             ToolbarItem {
-                NavigationLink("追加") {
-                    MemberAddView(group: group)
-                        .environmentObject(Memberdata) // MemberListデータを渡す
-                        .environmentObject(listData) // PayListデータを渡す
+                NavigationLink(value : Destination.MemberAdd(group: group)) {
+                   Text("追加")
                 }
             }
         }

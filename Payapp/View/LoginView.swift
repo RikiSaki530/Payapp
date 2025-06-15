@@ -18,75 +18,72 @@ struct LoginView: View {
     @State private var errorMessage: String?
     @State private var password : String = ""
     
+    @Binding var path: NavigationPath
+    
     var body: some View {
         
-        NavigationStack{
+        VStack(spacing : 30){
             
-            VStack(spacing : 30){
-                
-                TextField("メールアドレス" , text: $ExistingUser.Mailaddress)
-                    .frame(width: 300)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .disableAutocorrection(true)
-                
-                SecureField("パスワード" , text: $password)
-                    .frame(width: 300)
-                    .textFieldStyle(.roundedBorder)
-                    .autocapitalization(.none)
-                
-                Button("ログイン") {
-                    login(email: ExistingUser.Mailaddress, password: password) { user in
-                        if let user = user {
-                            print(user.UserID)
-                            self.loginSuccess = true
-                            
-                            // ✅ @StateObject の ExistingUser に代入
-                            ExistingUser.name = user.name
-                            ExistingUser.Mailaddress = user.Mailaddress
-                            ExistingUser.admin = user.admin
-                            ExistingUser.UserID = user.UserID
-                            ExistingUser.groupList = user.groupList
-                            //確認用
-                            print(ExistingUser.name)
-                            
-                            print("UserDefaults saved")
-                            // UserDefaults に保存
-                            UserDefaults.standard.set(user.UserID, forKey: "userID")
-                            UserDefaults.standard.set(user.Mailaddress, forKey: "userEmail")
-                            UserDefaults.standard.set(user.name, forKey: "userName")
-                            
-                            
-                            if let name = UserDefaults.standard.string(forKey: "userName") {
-                                print("保存されたユーザー名: \(name)")
-                            } else {
-                                print("ユーザー名がUserDefaultsに保存されていません")
-                            }
-                            
-                            
+            TextField("メールアドレス" , text: $ExistingUser.Mailaddress)
+                .frame(width: 300)
+                .textFieldStyle(.roundedBorder)
+                .autocapitalization(.none)
+                .keyboardType(.emailAddress)
+                .disableAutocorrection(true)
+            
+            SecureField("パスワード" , text: $password)
+                .frame(width: 300)
+                .textFieldStyle(.roundedBorder)
+                .autocapitalization(.none)
+            
+            Button("ログイン") {
+                login(email: ExistingUser.Mailaddress, password: password) { user in
+                    if let user = user {
+                        print(user.UserID)
+                        
+                        path.append(Destination.GroupList(existingUser : ExistingUser))
+                        
+                        // ✅ @StateObject の ExistingUser に代入
+                        ExistingUser.name = user.name
+                        ExistingUser.Mailaddress = user.Mailaddress
+                        ExistingUser.admin = user.admin
+                        ExistingUser.UserID = user.UserID
+                        ExistingUser.groupList = user.groupList
+                        //確認用
+                        print(ExistingUser.name)
+                        
+                        print("UserDefaults saved")
+                        // UserDefaults に保存
+                        UserDefaults.standard.set(user.UserID, forKey: "userID")
+                        UserDefaults.standard.set(user.Mailaddress, forKey: "userEmail")
+                        UserDefaults.standard.set(user.name, forKey: "userName")
+                        
+                        
+                        if let name = UserDefaults.standard.string(forKey: "userName") {
+                            print("保存されたユーザー名: \(name)")
                         } else {
-                            self.errorMessage = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。"
+                            print("ユーザー名がUserDefaultsに保存されていません")
                         }
                         
+                        
+                    } else {
+                        self.errorMessage = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。"
                     }
-                }
-                .padding()
-                .background(Color.yellow)
-                .cornerRadius(10)
-                .foregroundColor(.black)
-                // エラーメッセージがあれば表示
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding(.top, 10)
+                    
                 }
             }
             .padding()
-            .navigationDestination(isPresented: $loginSuccess) {
-                GroupListView(existingUser: ExistingUser)
+            .background(Color.yellow)
+            .cornerRadius(10)
+            .foregroundColor(.black)
+            // エラーメッセージがあれば表示
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .padding(.top, 10)
             }
         }
+        .padding()
     }
     
     

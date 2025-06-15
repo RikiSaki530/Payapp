@@ -28,8 +28,13 @@ struct ChangeUserInfoView: View {
                     TextField("Name", text: $individual.name)
                 }
                 //学年
-                Section("学年"){
-                    TextField("grade" , text: $individual.grade)
+                Section(
+                    header: Text("学年・所属ステータス"),
+                    footer: Text("学年・所属ステータスは空欄でも大丈夫です。")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                ) {
+                    TextField("例：1年、卒業生など", text: $individual.grade)
                 }
             }
         }

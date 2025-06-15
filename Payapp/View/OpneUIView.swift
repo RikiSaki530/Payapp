@@ -9,44 +9,45 @@
 import SwiftUI
 
 struct OpneUIView: View {
+    
+    @Binding var path: NavigationPath
+    
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("会計app")
-                    .font(.largeTitle)
-                
-                Spacer()
-                    .frame(height : 64)
+        VStack {
+            Text("会計app")
+                .font(.largeTitle)
+            
+            Spacer()
+                .frame(height : 64)
+            
+            NavigationLink(value: Destination.SingUp) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.yellow)
+                        .frame(width: 200, height: 60)
                     
-                NavigationLink(destination: SingUpView()) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.yellow)
-                            .frame(width: 200, height: 60)
-                        
-                        Text("新規登録")
-                            .foregroundColor(.black)
-                            .font(.title2)
-                    }
+                    Text("新規登録")
+                        .foregroundColor(.black)
+                        .font(.title2)
                 }
-                
-                Spacer()
-                    .frame(height: 32)
-                
-                NavigationLink(destination: LoginView()) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.yellow)
-                            .frame(width: 200, height: 60)
-                        
-                        Text("ログイン")
-                            .foregroundColor(.black)
-                            .font(.title2)
-                    }
-                }
-                
-                .padding()
             }
+            
+            Spacer()
+                .frame(height: 32)
+            
+            NavigationLink(value : Destination.Login) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.yellow)
+                        .frame(width: 200, height: 60)
+                    
+                    Text("ログイン")
+                        .foregroundColor(.black)
+                        .font(.title2)
+                }
+            }
+            
+            .padding()
         }
     }
 }
